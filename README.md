@@ -12,4 +12,4 @@ You may try Platform\build\TestProduct\Impl\InTest\RunTests.ps1
 
 When your build scripts are relativelly complicated, the ability to run the whole thing locally became very desirable.
 
-You may use Powershell Jobs to run tests in parallel by assembly. (not currently included feature)
+My plan of what to share next is [here](dev-in-test.blogspot.com/2014/02/how-we-at-jetbrains-dotnet-team-do.html).
