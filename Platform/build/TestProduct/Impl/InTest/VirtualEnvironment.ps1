@@ -1,6 +1,3 @@
-#$_VmName = "Win7x64"
-#$Start = [bool]"true"
-
 param 
 (
     [Parameter(Position=0, Mandatory=$true)]$VmName,
@@ -18,9 +15,9 @@ function StartVM()
 
     $config = (& ("$ProductHomeDir\Platform\tools\OsTestFramework.Config\OsTestFramework.GetConfig.ps1") -VmName $VmName)
 
-    if ($config.HostType -ne [JetBrains.OsTestFramework.Config.Data.Environment.HostType]::VIServer)
+    if (-not $VmName.Contains("+"))
     {
-        throw "HostType other than VIServer is not supported."
+        throw "VmName must be formed as 'machine_name'+'snapshot_name'." 
     }
     else
     {
