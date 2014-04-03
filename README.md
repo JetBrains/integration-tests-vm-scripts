@@ -12,7 +12,7 @@ Run Platform\build\TestProduct\Impl\InTest\RunTests.ps1
 
 When your build scripts are relativelly complicated, the ability to run the whole thing locally became very desirable.
 
-## How to clone, power on/off, etc VmWare vitual machines? ##
+## How to make linked clone, power on/off, get IP of powered machine for VmWare vCenter? ##
 
 1. Install [VMware vSphere PowerCLI](https://my.vmware.com/web/vmware/details?downloadGroup=VSP510-PCLI-510&productId=285).
 2. Implement your own Platform\Tools\OsTestFramework.Config\OsTestFramework.GetConfig.ps1
