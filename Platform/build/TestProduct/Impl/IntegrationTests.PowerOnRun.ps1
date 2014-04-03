@@ -6,7 +6,7 @@
     [Parameter(Position=0)]$CountOfMachinesToStart = 1,
     [Parameter(Position=0)]$NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
     [Parameter(Position=0)]$NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
-    [Parameter(Position=0)]$ApplicationDescriptorAssembly = "JetBrains.ReSharper.Product.VisualStudio.Core", # JetBrains.dotTrace.VS , JetBrains.dotCover.VisualStudio
+    [Parameter(Position=0)]$ApplicationDescriptorAssembly = "JetBrains.${ProductName}.${ProductName}Product", #"JetBrains.ReSharper.Product.VisualStudio.Core", # JetBrains.dotTrace.VS , JetBrains.dotCover.VisualStudio
     
     [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
     [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
@@ -90,29 +90,9 @@ function Main()
         $machine.data | Out-String | Write-Host
     }
 
-    # what to test
-    $InTestsAssemblies = @(& "$ProductHomeDir\Platform\build\TestProduct\Impl\GetAllAssembliesXml.ps1" -ProductName $ProductName `
-        -TestAssembliesConfiguration_Nunit "TestsIntegration" -ApplicationDescriptorAssembly $ApplicationDescriptorAssembly -ProductBinariesDir $ProductBinariesDir)
-    $FilesToTest = $InTestsAssemblies
-    $excludeConfigs = @("VS0800","VS0900","VS1000","VS1100", "VS1200", "TestsNunit")
-    foreach ($config in $excludeConfigs){
-        try {
-			$ExcludeAssemblies = @(& "$ProductHomeDir\Platform\build\TestProduct\Impl\GetAllAssembliesXml.ps1" -ProductName $ProductName `
-    	        -TestAssembliesConfiguration_Nunit $config -ApplicationDescriptorAssembly $ApplicationDescriptorAssembly -ProductBinariesDir $ProductBinariesDir)
-        	if ($ExcludeAssemblies -ne $null){
-                $ExcludeAssemblies| Out-String | Write-Host;
-				$FilesToTest = @($FilesToTest | Where-Object {-not @($ExcludeAssemblies | Select -ExpandProperty "Name").Contains($_.Name)}) 
-				}
-		}
-		catch [Exception] {
-			write-host $_.Exception.GetType().FullName; 
-			write-host $_.Exception.Message; 
-    	}
-	}
+    $FilesToTest = @(& "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\GetAssembliesToTest.ps1" -ProductName $ProductName `
+        -ApplicationDescriptorAssembly $ApplicationDescriptorAssembly -ProductBinariesDir $ProductBinariesDir)
     
-    $FilesToTest = $FilesToTest | Sort-Object -Property Length -Descending
-    $FilesToTest | Out-String | Write-Host
-	
     TestsInMachines $machines $FilesToTest |Write-Host
     return $machines
 }
