@@ -16,6 +16,7 @@ function GetAssembliesToTest()
     
     $FilesToTest = $FilesToTest | Sort-Object -Property Length -Descending #start with biggest assembly
     $FilesToTest | Out-String | Write-Host
+	return $FilesToTest
 }
 
 
