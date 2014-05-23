@@ -1,7 +1,10 @@
 param 
 (
     [Parameter(Position=0, Mandatory=$true)]$VmName,
-    [Parameter(Position=0, Mandatory=$true)]$cloneName
+    [Parameter(Position=0, Mandatory=$true)]$cloneName,
+    [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
+    [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
+    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -13,8 +16,6 @@ function StartVM()
 {
     Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " + Starting VM "
 
-    $config = (& ("$ProductHomeDir\Platform\tools\OsTestFramework.Config\OsTestFramework.GetConfig.ps1") -VmName $VmName)
-
     if (-not $VmName.Contains("+"))
     {
         throw "VmName must be formed as 'machine_name'+'snapshot_name'." 
@@ -25,11 +26,11 @@ function StartVM()
         $snapshotName = $VmName.split("+")[1];
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " Starting in VIServer " 'name: '$name 'snapshotName:' $snapshotName
 
-        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -snapshotName $snapshotName -ViServerAddress $config.ViServerData.ViServerAddress -ViServerLogin $config.ViServerData.ViServerLogin -ViServerPasword $config.ViServerData.ViServerPasword)
+        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -snapshotName $snapshotName -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword)
         
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " CloneStart done. "
 
-        $obj = @{IpAddress=$ht["Ip"];UserName=$config.LoginInGuestLogin;Password=$config.LoginInGuestPassword}
+        $obj = @{IpAddress=$ht["Ip"]}
         return $obj
     }
 }

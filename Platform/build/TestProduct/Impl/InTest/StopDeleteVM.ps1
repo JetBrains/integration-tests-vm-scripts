@@ -1,7 +1,7 @@
 ﻿param 
 (
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
-    [Parameter(Position=0, Mandatory=$true)]$VmName
+    [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData #"server_adress", "login", "pass"
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -41,10 +41,9 @@ function DeleteClone($vm)
 
 function Run()
 {
-    $config = (& ("$ProductHomeDir\Platform\tools\OsTestFramework.Config\OsTestFramework.GetConfig.ps1") -VmName $VmName)
-    $ViServerAddress = $config.ViServerData.ViServerAddress
-    $ViServerLogin = $config.ViServerData.ViServerLogin
-    $ViServerPasword = $config.ViServerData.ViServerPasword
+    $ViServerAddress = $ViServerData[0]
+    $ViServerLogin = $ViServerData[1]
+    $ViServerPasword = $ViServerData[2]
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
 
     $vms = @(Get-VM -Name $cloneNamePattern*)

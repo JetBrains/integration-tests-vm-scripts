@@ -1,7 +1,8 @@
 Param
 (
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
-    [Parameter(Position=0, Mandatory=$true)]$VmName #used to read the config with vserver address
+    [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
+    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -31,8 +32,7 @@ function LoadTypes()
 
 function Run
 {
-    $config = (& ("$ProductHomeDir\Platform\tools\OsTestFramework.Config\OsTestFramework.GetConfig.ps1") -VmName $VmName)
-    & (Join-Path (Get-ScriptDirectory) "InTest\ViServer.Connect.ps1") -ViServerAddress $config.ViServerData.ViServerAddress -ViServerLogin $config.ViServerData.ViServerLogin -ViServerPasword $config.ViServerData.ViServerPasword | Out-Null
+    & (Join-Path (Get-ScriptDirectory) "InTest\ViServer.Connect.ps1") -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2] | Out-Null
     
     $vms = @(Get-VM -Name $cloneNamePattern*)
     foreach ($vm in $vms)
@@ -42,7 +42,7 @@ function Run
             $ips =$vm.Guest.ipaddress
             foreach ($ip in $ips){
                 if ($ip.StartsWith('172.')){
-                    CopyLogs $ip $config.LoginInGuestLogin $config.LoginInGuestPassword
+                    CopyLogs $ip $GuestCredentials[0] $GuestCredentials[1]
         }}}
     }
 }

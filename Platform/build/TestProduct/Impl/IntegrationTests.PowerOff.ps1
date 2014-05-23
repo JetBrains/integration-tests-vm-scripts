@@ -1,7 +1,7 @@
 Param
 (
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
-    [Parameter(Position=0, Mandatory=$true)]$VmName #used to read the config with vserver address
+    [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData #"server_adress", "login", "pass"
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -9,7 +9,7 @@ function GetDirectoryNameOfFileAbove($markerfile) { $result = ""; $path = $MyInv
 $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
 Try {
-    & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopDeleteVM.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName
+    & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopDeleteVM.ps1" -cloneNamePattern $cloneNamePattern -ViServerData $ViServerData
 }
 Catch {
 Write-Host $error[0]

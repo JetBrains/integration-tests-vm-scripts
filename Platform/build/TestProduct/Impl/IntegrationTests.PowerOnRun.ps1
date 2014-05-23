@@ -1,17 +1,16 @@
 ﻿Param
 (
-    [Parameter(Position=0)]$ProductName = "Perseus",
+    [Parameter(Position=0, Mandatory=$true)][String[]]$FilesToTest,
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$VmName,
     [Parameter(Position=0)]$CountOfMachinesToStart = 1,
     [Parameter(Position=0)]$NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
     [Parameter(Position=0)]$NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
-    [Parameter(Position=0)]$ApplicationDescriptorAssembly = "JetBrains.${ProductName}.${ProductName}Product", #"JetBrains.ReSharper.Product.VisualStudio.Core", # JetBrains.dotTrace.VS , JetBrains.dotCover.VisualStudio
-    
+        
     [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
     [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
-    [Parameter(Position=0)]$ProductBinariesDir, 
-    [Parameter(Position=0)]$ArtifactsDir
+    [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
+    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -22,15 +21,11 @@ function RunInOneMachine($machine, $fileToTest)
 {
     Write-Host Running tests for: $fileToTest in $machine.cloneName
     $env:InTestIpAddress = $machine.data.IpAddress
-    $env:InTestUserName = $machine.data.UserName
-    $env:InTestPassword = $machine.data.Password
     $params = @{fileToTest = $fileToTest;}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
     if ($NUnitCpu -ne $null)           { $params.Add("NUnitCpu", $NUnitCpu) }
     if ($NUnitRuntime -ne $null)       { $params.Add("NUnitRuntime", $NUnitRuntime) }
-    if ($ProductBinariesDir -ne $null) { $params.Add("ProductBinariesDir", $ProductBinariesDir) }
-    if ($ArtifactsDir -ne $null)       { $params.Add("ArtifactsDir", $ArtifactsDir) }
     [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1";
     $sb = [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
     $job = Start-Job -scriptblock $sb
@@ -73,8 +68,8 @@ function TestsInMachines($machines, $FilesToTest)
             else # copy logs and poweroff if there are no more tests for the machine.
             {
                 $i+=1
-                & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -VmName $VmName
-                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -VmName $VmName
+                & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -GuestCredentials $GuestCredentials
+                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData
             }
         }
         Sleep(10)
@@ -85,14 +80,14 @@ function TestsInMachines($machines, $FilesToTest)
 
 function Main()
 {
-    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -CountOfMachinesToStart $CountOfMachinesToStart)
+    $env:InTestUserName = $GuestCredentials[0]
+    $env:InTestPassword = $GuestCredentials[1]
+
+    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $CountOfMachinesToStart)
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
     }
 
-    $FilesToTest = @(& "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\GetAssembliesToTest.ps1" -ProductName $ProductName `
-        -ApplicationDescriptorAssembly $ApplicationDescriptorAssembly -ProductBinariesDir $ProductBinariesDir)
-    
     TestsInMachines $machines $FilesToTest |Write-Host
     return $machines
 }

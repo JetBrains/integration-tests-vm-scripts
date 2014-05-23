@@ -1,7 +1,6 @@
 ﻿Param
 (
-    [Parameter(Position=0)]$ProductName,
-    [Parameter(Position=0)]$ApplicationDescriptorAssembly,  
+    #[Parameter(Position=0)]$ApplicationDescriptorAssembly = "JetBrains.${ProductName}.${ProductName}Product", #"JetBrains.ReSharper.Product.VisualStudio.Core", # JetBrains.dotTrace.VS , JetBrains.dotCover.VisualStudio
     [Parameter(Position=0)]$ProductBinariesDir="C:\Work\TeamCity-extensions\Platform\lib"
 )
 

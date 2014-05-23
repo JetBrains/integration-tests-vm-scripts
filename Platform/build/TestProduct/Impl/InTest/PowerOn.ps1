@@ -2,6 +2,7 @@ Param
 (
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$VmName,
+    [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
     [Parameter(Position=0)]$CountOfMachinesToStart=1
 )
 
@@ -19,7 +20,7 @@ function PowerOn
     $jobs = @()
     $jobsA = @()
     foreach ($cloneName in $cloneNames) {
-        $params = @{VmName = $VmName;cloneName = $cloneName}
+        $params = @{VmName = $VmName;cloneName = $cloneName;ViServerAddress=$ViServerData[0];ViServerLogin=$ViServerData[1];ViServerPasword=$ViServerData[2]}
         [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1";
         $sb = [scriptblock]::create("&'$scriptpath' $(&{$args} @params)")
         $job = Start-Job -scriptblock $sb
