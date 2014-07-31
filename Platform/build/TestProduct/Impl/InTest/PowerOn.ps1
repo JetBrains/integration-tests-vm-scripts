@@ -20,27 +20,13 @@ function PowerOn
     $jobs = @()
     $jobsA = @()
     foreach ($cloneName in $cloneNames) {
-        $params = @{VmName = $VmName;cloneName = $cloneName;ViServerAddress=$ViServerData[0];ViServerLogin=$ViServerData[1];ViServerPasword=$ViServerData[2]}
-        [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1";
-        $sb = [scriptblock]::create("&'$scriptpath' $(&{$args} @params)")
-        $job = Start-Job -scriptblock $sb
-        $jobs += $job
-        $jobsA+=New-Object PSObject -Property @{ VmName=$VmName; cloneName=$cloneName; job=$job; data=@()}
+   
+        & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1" -VmName $VmName -cloneName $cloneName -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2]
+        
+         Write-Host "started on " + $VmName
     }
 
-    $machines = @()
-    foreach ($j in $jobs)
-    {
-        Wait-Job -Job $j |Out-Null
-        foreach ($jA in $jobsA){
-            if ($j -eq $jA.job){
-                $jA.data = Receive-Job -Job $j
-                $machines +=$jA
-            }
-        }
-    }
-    Write-Host @($machines).Count machines started: $machines
-    return $machines
+    return  @()
 }
 
 $ret = PowerOn
