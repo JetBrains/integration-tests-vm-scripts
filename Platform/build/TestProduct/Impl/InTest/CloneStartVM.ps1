@@ -47,7 +47,13 @@ function Clone()
     if($vm.State -eq 'Running'){
         throw "Someone is manually modifying VM image. Since we do not want to affect this manuall work - the build would be failed."
     }
-    Set-VM -VM $name -Snapshot (Get-Snapshot -VM $name -Name $snapshotName) -confirm:$FALSE | Out-Null
+    
+    $snapshots = Get-Snapshot -VM $name -Name $snapshotName
+    if ( $snapshots.Count -gt 1 ) {
+        throw "There are more than one snapshots with the same name $snapshotName on machine $name "
+    }
+
+    Set-VM -VM $name -Snapshot ($snapshots[0]) -confirm:$FALSE | Out-Null
 
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
