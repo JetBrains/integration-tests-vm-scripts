@@ -10,7 +10,8 @@ param
     [Parameter(Position=0, Mandatory=$true)]$snapshotName,
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
-    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword
+    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword,
+    [Parameter(Position=0, Mandatory=$false)]$vmStartupTimeout = 320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -47,7 +48,13 @@ function Clone()
     if($vm.State -eq 'Running'){
         throw "Someone is manually modifying VM image. Since we do not want to affect this manuall work - the build would be failed."
     }
-    Set-VM -VM $name -Snapshot (Get-Snapshot -VM $name -Name $snapshotName) -confirm:$FALSE | Out-Null
+    
+    $snapshots = Get-Snapshot -VM $name -Name $snapshotName
+    if ($snapshots.GetType().IsArray -and $snapshots.Count -gt 1 ) {
+        throw "There are more than one snapshots with the same name $snapshotName on machine $name "
+    }
+
+    Set-VM -VM $name -Snapshot ($snapshots) -confirm:$FALSE | Out-Null
 
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
@@ -85,9 +92,7 @@ function WaitGuest([string]$vmName, [int]$timeout)
             foreach ($ip in $ips)
                 {
                     if ( ($ip -As [IPAddress]) -As [Bool] )
-                    {
-                        return [string]$ip
-                    }
+                        {return [string]$ip}
                 }
         }
         ; $i=$i+10}
@@ -112,7 +117,7 @@ function Run()
     Write-Host 'started vm = ' $cloneName
     #Wait-Tools -VM $vm
           
-    $ip = WaitGuest $vm 320
+    $ip = WaitGuest $vm $vmStartupTimeout
     Write-Host "IP :" $ip
 	    
     Return @{"Ip"=$ip;"CloneName"=$cloneName}

@@ -4,7 +4,8 @@ param
     [Parameter(Position=0, Mandatory=$true)]$cloneName,
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
-    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword
+    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword,
+    [Parameter(Position=0, Mandatory=$false)]$vmStartupTimeout = 320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -26,7 +27,7 @@ function StartVM()
         $snapshotName = $VmName.split("+")[1];
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " Starting in VIServer " 'name: '$name 'snapshotName:' $snapshotName
 
-        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -snapshotName $snapshotName -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword)
+        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -snapshotName $snapshotName -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword -vmStartupTimeout $vmStartupTimeout)
         
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " CloneStart done. "
 

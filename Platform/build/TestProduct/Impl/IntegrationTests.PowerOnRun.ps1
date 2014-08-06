@@ -10,7 +10,8 @@
     [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
     [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
     [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
-    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials
+    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials,
+    [Parameter(Position=0, Mandatory=$false)] $vmStartupTimeout = 320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -69,7 +70,7 @@ function TestsInMachines($machines, $FilesToTest)
             {
                 $i+=1
                 & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -GuestCredentials $GuestCredentials
-                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData
+                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -
             }
         }
         Sleep(10)
@@ -83,7 +84,7 @@ function Main()
     $env:InTestUserName = $GuestCredentials[0]
     $env:InTestPassword = $GuestCredentials[1]
 
-    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $CountOfMachinesToStart)
+    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $CountOfMachinesToStart -vmStartupTimeout -vmStartupTimeout $vmStartupTimeout)
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
     }
