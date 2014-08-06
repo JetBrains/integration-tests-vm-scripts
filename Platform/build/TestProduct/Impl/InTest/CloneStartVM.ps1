@@ -10,7 +10,8 @@ param
     [Parameter(Position=0, Mandatory=$true)]$snapshotName,
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
-    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword
+    [Parameter(Position=0, Mandatory=$true)]$ViServerPasword,
+    [Parameter(Position=0, Mandatory=$false)]$vmStartupTimeout = 320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -116,7 +117,7 @@ function Run()
     Write-Host 'started vm = ' $cloneName
     #Wait-Tools -VM $vm
           
-    $ip = WaitGuest $vm 320
+    $ip = WaitGuest $vm $vmStartupTimeout
     Write-Host "IP :" $ip
 	    
     Return @{"Ip"=$ip;"CloneName"=$cloneName}
