@@ -3,7 +3,8 @@ Param
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$VmName,
     [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
-    [Parameter(Position=0)]$CountOfMachinesToStart=1
+    [Parameter(Position=0)]$CountOfMachinesToStart=1,
+    [Parameter(Position=0, Mandatory=$false)] $vmStartupTimeout=320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -21,7 +22,7 @@ function PowerOn
     $jobsA = @()
     foreach ($cloneName in $cloneNames) {
    
-        & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1" -VmName $VmName -cloneName $cloneName -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2]
+        & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1" -VmName $VmName -cloneName $cloneName -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2] -vmStartupTimeout $vmStartupTimeout
         
          Write-Host "started on " + $VmName
     }

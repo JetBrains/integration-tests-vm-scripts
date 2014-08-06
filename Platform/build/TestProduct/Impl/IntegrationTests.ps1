@@ -10,7 +10,8 @@
     [Parameter(Position=0)]$NUnitIncludeCategory = "",
     [Parameter(Position=0)]$NUnitExcludeCategory = "",
     [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData, #"server_adress", "login", "pass"
-    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials #"guest_login", "guest_pass"
+    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials #"guest_login", "guest_pass",
+    [Parameter(Position=0, Mandatory=$false)] $vmStartupTimeout=320
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -29,7 +30,7 @@ function Run
         & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.PowerOnRun.ps1" -FilesToTest $FilesToTest `
             -cloneNamePattern $cloneNamePattern -VmName $VmName -CountOfMachinesToStart $CountOfMachinesToStart -NUnitExcludeCategory $NUnitExcludeCategory -NUnitIncludeCategory $NUnitIncludeCategory `
             -NUnitCpu $NUnitCpu -NUnitRuntime $NUnitRuntime `
-            -ViServerData $ViServerData -GuestCredentials $GuestCredentials
+            -ViServerData $ViServerData -GuestCredentials $GuestCredentials -vmStartupTimeout $vmStartupTimeout
         
         & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $cloneNamePattern -ViServerData $ViServerData -GuestCredentials $GuestCredentials
     }
