@@ -84,8 +84,10 @@ function WaitGuest([string]$vmName, [int]$timeout)
         {
             foreach ($ip in $ips)
                 {
-                    if ($ip.StartsWith('172.'))
-                        {return [string]$ip}
+                    if ( ($ip -As [IPAddress]) -As [Bool] )
+                    {
+                        return [string]$ip
+                    }
                 }
         }
         ; $i=$i+10}
