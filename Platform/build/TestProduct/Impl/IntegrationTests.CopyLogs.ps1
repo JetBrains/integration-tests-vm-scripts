@@ -23,8 +23,24 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
 
 function LoadTypes()
 {
-    $OsTestsFrameworkDll = "$ProductHomeDir\Platform\Lib\JetBrains.OsTestFramework.dll"
-    $ZetaLongPathsDll = "$ProductHomeDir\Platform\Lib\ZetaLongPaths.dll"
+    $TempDir = [System.IO.Path]::GetTempPath()+ "\InTest"
+    If (Test-Path $TempDir){
+        Remove-Item $TempDir\* -recurse
+    }
+    Else{
+        New-Item -ItemType directory -Path $TempDir
+    }
+
+    $nugetPath=[System.IO.Path]::GetTempPath()+"nuget.exe"
+    If (-not (Test-Path $nugetPath)){
+        $webclient = New-Object System.Net.WebClient
+        $webclient.DownloadFile("http://nuget.org/nuget.exe", $nugetPath);
+    }
+
+    & $nugetPath install OsTestFramework -OutputDirectory $TempDir
+
+    $OsTestsFrameworkDll = (Get-ChildItem "JetBrains.OsTestFramework.dll" -Recurse -Path $TempDir).FullName
+    $ZetaLongPathsDll = (Get-ChildItem "ZetaLongPaths*" -Path $TempDir).FullName + "\lib\Net20\ZetaLongPaths.dll"
  
     $Assem = ($OsTestsFrameworkDll, $ZetaLongPathsDll)
     Add-Type -Path $Assem
