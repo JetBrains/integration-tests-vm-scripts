@@ -82,11 +82,9 @@ function WaitGuest([string]$vmName, [int]$timeout)
         Write-Host $ips $winName
         if ($ips -notlike '' -and $winName -notlike '')
         {
-            foreach ($ip in $ips)
-                {
-                    if ($ip.StartsWith('172.'))
-                        {return [string]$ip}
-                }
+			$ip = $ips | where {([IPAddress]$_).AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork}
+			if ($ip -notlike '')
+				{return $ip}
         }
         ; $i=$i+10}
     while ($i -le $timeout)
