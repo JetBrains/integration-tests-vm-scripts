@@ -3,7 +3,7 @@
     [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
     [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
     
-    [Parameter(Position=0, Mandatory=$true)][String[]]$FilesToTest,
+    [Parameter(Position=0, Mandatory=$true)][String[]]$FilesToTest, # "path_to_dll1", "path_to_dll2"
     [Parameter(Position=0)]$CountOfMachinesToStart = 1,
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$VmName,
