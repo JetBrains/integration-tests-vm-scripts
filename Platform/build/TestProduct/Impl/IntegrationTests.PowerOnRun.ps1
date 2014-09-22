@@ -17,7 +17,7 @@
 function GetDirectoryNameOfFileAbove($markerfile) { $result = ""; $path = $MyInvocation.ScriptName; while(($path -ne "") -and ($path -ne $null) -and ($result -eq "")) { if(Test-Path $(Join-Path $path $markerfile)) {$result=$path}; $path = Split-Path $path }; if($result -eq ""){throw "Could not find marker file $markerfile in parent folders."} return $result; }
 $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
-function RunInOneMachine($machine, $fileToTest)
+function MakeScriptBlock($machine, $fileToTest)
 {
     Write-Host Running tests for: $fileToTest in $machine.cloneName
     $env:InTestIpAddress = $machine.data.IpAddress
@@ -27,13 +27,20 @@ function RunInOneMachine($machine, $fileToTest)
     if ($NUnitCpu -ne $null)           { $params.Add("NUnitCpu", $NUnitCpu) }
     if ($NUnitRuntime -ne $null)       { $params.Add("NUnitRuntime", $NUnitRuntime) }
     [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1";
-    $sb = [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
+    return [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
+}
+
+function RunInOneMachine($machine, $fileToTest)
+{
+    $sb = MakeScriptBlock $machine $fileToTest
     $job = Start-Job -scriptblock $sb
     return @{job=$job; machine =$machine}
 }
 
 function TestsInMachines($machines, $FilesToTest)
 {
+  # parallel run
+  if (@($machines).Count >1) {
     $i=0
     $jobsM=@{}
     foreach ($machine in $machines){
@@ -76,6 +83,14 @@ function TestsInMachines($machines, $FilesToTest)
     }
 
     Get-Job | Wait-Job | Receive-Job |Write-Host
+  }
+  else # without parallel run
+  {
+    foreach ($fileToTest in $FilesToTest){
+        $sb = MakeScriptBlock @($machines)[0] $fileToTest
+        Invoke-Command -ScriptBlock $sb
+    }
+  }
 }
 
 function Main()
