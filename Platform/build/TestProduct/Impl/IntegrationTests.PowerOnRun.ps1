@@ -26,8 +26,10 @@ function MakeScriptBlock($machine, $fileToTest)
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
     if ($NUnitCpu -ne $null)           { $params.Add("NUnitCpu", $NUnitCpu) }
     if ($NUnitRuntime -ne $null)       { $params.Add("NUnitRuntime", $NUnitRuntime) }
-    [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1";
-    return [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
+    [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1"
+    $block = [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
+    Write-Host $block
+    return $block
 }
 
 function RunInOneMachine($machine, $fileToTest)
