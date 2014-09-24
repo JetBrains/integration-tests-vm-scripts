@@ -17,11 +17,12 @@ $NUnitExcludeCategory = $NUnitExcludeCategory -join ","
 
 function RunIntegrationTests
 {
-    Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " + $fileToTest Integration Tests "
+    Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " + $fileToTest"
     
     # which NUnit to use
     Import-Module "$ProductHomeDir\Platform\build\TestProduct\Impl\NUnit.psm1"
     [scriptblock]$RunNunit = New-NUnitRunner -NUnitCpu $NUnitCpu -NUnitRuntime $NUnitRuntime -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory
+    Write-Host "Running nunit: "$RunNunit
 
     ####################
     ## Test!
