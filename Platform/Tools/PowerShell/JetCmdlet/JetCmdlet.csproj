@@ -31,8 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Platform.JetCmdletFx.Util">
-      <HintPath>Lib\JetBrains.Platform.JetCmdletFx.Util.dll</HintPath>
+    <Reference Include="JetBrains.Platform.Interop.WinApi">
+      <HintPath>Lib\JetBrains.Platform.Interop.WinApi.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Platform.Util">
+      <HintPath>Lib\JetBrains.Platform.Util.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="System" />
