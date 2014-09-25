@@ -26,7 +26,7 @@ function New-NUnitRunner
     if(($NUnitRuntime -ne "v2.0") -and ($NUnitRuntime -ne "v4.0")) { throw "Unexpected NUnit Runtime." }
    
     # Load the helper module (incl. TeamCity props support)
-    & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1"
+    & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
     
     # Choose implementation
     $tcprops = New-TeamCityProperties
