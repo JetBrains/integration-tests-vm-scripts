@@ -35,12 +35,14 @@ function LoadTypes()
     }
 
     $nugetPath=[System.IO.Path]::GetTempPath()+"nuget.exe"
+    Write-Host $nugetPath
     If (-not (Test-Path $nugetPath)){
         $webclient = New-Object System.Net.WebClient
         $webclient.DownloadFile("http://nuget.org/nuget.exe", $nugetPath);
     }
 
-    & $nugetPath install OsTestFramework -OutputDirectory $TempDir
+    $configPath = Join-Path $ProductHomeDir "NuGet.config"
+    & $nugetPath install OsTestFramework -OutputDirectory $TempDir -ConfigFile $configPath
 
     $OsTestsFrameworkDll = (Get-ChildItem ($AssemblyName1+".dll") -Recurse -Path $TempDir).FullName
     $ZetaLongPathsDll = (Get-ChildItem ($AssemblyName2+"*") -Path $TempDir).FullName + "\lib\Net20\"+$AssemblyName2+".dll"
