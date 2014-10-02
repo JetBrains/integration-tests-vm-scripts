@@ -108,7 +108,7 @@ function Run()
     Write-Host 'started vm = ' $cloneName
     #Wait-Tools -VM $vm
           
-    $ip = WaitGuest $vm 320
+    $ip = WaitGuest $vm 1000
     Write-Host "IP :" $ip
 	    
     Return @{"Ip"=$ip;"CloneName"=$cloneName}
