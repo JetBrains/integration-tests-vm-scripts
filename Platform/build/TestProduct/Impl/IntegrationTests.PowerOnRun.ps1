@@ -41,6 +41,8 @@ function RunInOneMachine($machine, $fileToTest)
 
 function TestsInMachines($machines, $FilesToTest)
 {
+  $Env:InTestRunInVirtualEnvironment = "True"
+  $Env:InTestRunInMainHive = "True"
   # parallel run
   if (@($machines).Count -gt 1) {
     Write-Host "Running tests in multiple machines."
