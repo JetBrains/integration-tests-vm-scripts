@@ -49,6 +49,7 @@ function TestsInMachines($machines, $FilesToTest)
     foreach ($machine in $machines){
         $pair = RunInOneMachine $machine @($FilesToTest)[$i]
         $jobsM.Add($pair.job, $pair.machine)
+        Start-Sleep -s 10 # if JetCmdLet is not compiled both threads will try to compile it
         $i+=1
     }
     $jobsM |Out-String |Write-Host
