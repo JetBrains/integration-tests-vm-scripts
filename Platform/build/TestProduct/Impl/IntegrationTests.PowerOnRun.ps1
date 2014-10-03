@@ -42,7 +42,8 @@ function RunInOneMachine($machine, $fileToTest)
 function TestsInMachines($machines, $FilesToTest)
 {
   # parallel run
-  if (@($machines).Count >1) {
+  if (@($machines).Count -gt 1) {
+    Write-Host "Running tests in multiple machines."
     $i=0
     $jobsM=@{}
     foreach ($machine in $machines){
@@ -88,6 +89,7 @@ function TestsInMachines($machines, $FilesToTest)
   }
   else # without parallel run
   {
+    Write-Host "Running tests in single machine."
     foreach ($fileToTest in $FilesToTest){
         $sb = MakeScriptBlock @($machines)[0] $fileToTest
         Invoke-Command -ScriptBlock $sb
