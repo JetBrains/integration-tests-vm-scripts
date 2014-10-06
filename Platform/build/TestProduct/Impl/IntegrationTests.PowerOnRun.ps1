@@ -43,6 +43,10 @@ function TestsInMachines($machines, $FilesToTest)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
   $Env:InTestRunInMainHive = "True"
+
+  #Load helper module before starting parallel run 
+  & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
+
   # parallel run
   if (@($machines).Count -gt 1) {
     Write-Host "Running tests in multiple machines."
