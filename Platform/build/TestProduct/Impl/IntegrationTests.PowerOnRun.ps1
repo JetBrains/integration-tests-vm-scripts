@@ -100,7 +100,8 @@ function Main()
     $env:InTestUserName = $GuestCredentials[0]
     $env:InTestPassword = $GuestCredentials[1]
 
-    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $CountOfMachinesToStart)
+    $countToStart = [math]::min( $CountOfMachinesToStart, @($FilesToTest).Count )
+    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $countToStart)
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
     }
