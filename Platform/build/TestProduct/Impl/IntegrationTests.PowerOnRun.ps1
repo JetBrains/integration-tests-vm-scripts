@@ -41,13 +41,21 @@ function RunInOneMachine($machine, $fileToTest)
 
 function TestsInMachines($machines, $FilesToTest)
 {
+  $Env:InTestRunInVirtualEnvironment = "True"
+  $Env:InTestRunInMainHive = "True"
+
+  #Load helper module before starting parallel run 
+  & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
+
   # parallel run
-  if (@($machines).Count >1) {
+  if (@($machines).Count -gt 1) {
+    Write-Host "Running tests in multiple machines."
     $i=0
     $jobsM=@{}
     foreach ($machine in $machines){
         $pair = RunInOneMachine $machine @($FilesToTest)[$i]
         $jobsM.Add($pair.job, $pair.machine)
+        Start-Sleep -s 10 # if JetCmdLet is not compiled both threads will try to compile it
         $i+=1
     }
     $jobsM |Out-String |Write-Host
@@ -88,6 +96,7 @@ function TestsInMachines($machines, $FilesToTest)
   }
   else # without parallel run
   {
+    Write-Host "Running tests in single machine."
     foreach ($fileToTest in $FilesToTest){
         $sb = MakeScriptBlock @($machines)[0] $fileToTest
         Invoke-Command -ScriptBlock $sb

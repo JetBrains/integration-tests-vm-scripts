@@ -19,9 +19,6 @@ $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
 function Run
 {
-    $Env:InTestRunInVirtualEnvironment = "True"
-    $Env:InTestRunInMainHive = "True"
-
     # Poweroff before starting new machines and tests ensures that machines started at previous build are removed
     & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.PowerOff.ps1" -cloneNamePattern $cloneNamePattern -ViServerData $ViServerData
 
