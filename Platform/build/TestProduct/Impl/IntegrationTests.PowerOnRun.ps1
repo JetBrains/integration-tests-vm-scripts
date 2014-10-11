@@ -10,7 +10,8 @@
     [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
     [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
     [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
-    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials
+    [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials,
+    [Parameter(Position=0)]$ArtifactsDir
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -85,7 +86,7 @@ function TestsInMachines($machines, $FilesToTest)
             else # copy logs and poweroff if there are no more tests for the machine.
             {
                 $i+=1
-                & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -GuestCredentials $GuestCredentials
+                & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -GuestCredentials $GuestCredentials -ArtifactsDir $ArtifactsDir
                 & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData
             }
         }
@@ -109,7 +110,8 @@ function Main()
     $env:InTestUserName = $GuestCredentials[0]
     $env:InTestPassword = $GuestCredentials[1]
 
-    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $CountOfMachinesToStart)
+    $countToStart = [math]::min( $CountOfMachinesToStart, @($FilesToTest).Count )
+    $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $countToStart)
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
     }
