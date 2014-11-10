@@ -46,7 +46,7 @@ function Run()
     $ViServerPasword = $ViServerData[2]
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
 
-    $vms = @(Get-VM -Name $cloneNamePattern*)
+    $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
     foreach ($vm in $vms)
     {
         Stop $vm
