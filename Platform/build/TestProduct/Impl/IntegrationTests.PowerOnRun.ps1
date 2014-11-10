@@ -22,7 +22,7 @@ function MakeScriptBlock($machine, $fileToTest)
 {
     Write-Host Running tests for: $fileToTest in $machine.cloneName
     $env:InTestIpAddress = $machine.data.IpAddress
-    $params = @{fileToTest = $fileToTest;}
+    $params = @{fileToTest = """$fileToTest""";}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
     if ($NUnitCpu -ne $null)           { $params.Add("NUnitCpu", $NUnitCpu) }
