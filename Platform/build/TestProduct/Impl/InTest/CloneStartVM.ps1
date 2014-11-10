@@ -41,20 +41,13 @@ function Clone()
     Write-Host TargetDataStore: $datastore
     $sourceVM =  $vmHost | get-vm -Name $name
     
-    # revert to snapshot is essentual for future linked clone.
-    # but avoid reverting if someone is modifying the image and machine is powered
-    $vm = get-vmguest -VM $name
-    if($vm.State -eq 'Running'){
-        throw "Someone is manually modifying VM image. Since we do not want to affect this manuall work - the build would be failed."
-    }
-    Set-VM -VM $name -Snapshot (Get-Snapshot -VM $name -Name $snapshotName) -confirm:$FALSE | Out-Null
-
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
 
     $cloneSpec = new-object Vmware.Vim.VirtualMachineCloneSpec
     $cloneSpec.powerOn = $FALSE
-    $cloneSpec.Snapshot = $sourceVMView.Snapshot.CurrentSnapshot
+    $snapshot = (Get-Snapshot -VM $name -Name $snapshotName).ExtensionData.Snapshot
+    $cloneSpec.Snapshot = $snapshot
  
     $cloneSpec.Location = new-object Vmware.Vim.VirtualMachineRelocateSpec
     $cloneSpec.Location.DiskMoveType = [Vmware.Vim.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
@@ -82,7 +75,7 @@ function WaitGuest([string]$vmName, [int]$timeout)
         Write-Host $ips $winName
         if ($ips -notlike '' -and $winName -notlike '')
         {
-			$ip = $ips | where {([IPAddress]$_).AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork}
+			$ip = $ips | where {([IPAddress]$_).AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork} | where { -not ([string]$_).StartsWith("169") }
 			if ($ip -notlike '')
 				{return $ip}
         }
