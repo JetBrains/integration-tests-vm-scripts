@@ -17,14 +17,37 @@ Write-Host "ArtifactsDir: $ArtifactsDir will be used."
 
 function Get-ScriptDirectory { Split-Path $script:MyInvocation.MyCommand.Path }
 
+function global:PSUsing {
+    param (
+        [System.IDisposable] $inputObject = $(throw "The parameter -inputObject is required."),
+        [ScriptBlock] $scriptBlock = $(throw "The parameter -scriptBlock is required.")
+    )
+ 
+    Try {
+        &$scriptBlock
+    } Finally {
+        if ($inputObject -ne $null) {
+            if ($inputObject.psbase -eq $null) {
+                $inputObject.Dispose()
+            } else {
+                $inputObject.psbase.Dispose()
+            }
+        }
+    }
+}
+
 function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
 {
     Write-Host "Coping Logs from" $IpAddress ", using login:" $UserName "and password:" $Password
     # Copy Logs from VM
     LoadTypes
-    $remoteEnv = New-Object JetBrains.OsTestFramework.RemoteEnvironment($IpAddress, $UserName, $Password, "$ProductHomeDir\Platform\tools\PsTools\PsExec.exe");
-    Try {$remoteEnv.CopyFileFromGuestToHost(("C:\Tmp\JetLogs"), "$ArtifactsDir\JetLogs");} Catch { Write-Host $error[0]}
-    Try {  $remoteEnv.CopyFileFromGuestToHost(("C:\Tmp\JetGolds"), "$ArtifactsDir\JetGolds");} Catch { Write-Host $error[0]}
+    PSUsing ($netPath = New-Object JetBrains.OsTestFramework.Network.MappedNetworkPath $IpAddress, $UserName, $Password, "C:\Tmp") {
+      
+      $jetLogs = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetLogs"
+      $jetGolds = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetGolds"
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
+    }
 }
 
 function LoadTypes()
