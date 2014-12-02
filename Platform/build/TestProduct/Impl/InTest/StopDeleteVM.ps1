@@ -9,7 +9,7 @@ function Get-ScriptDirectory { Split-Path $script:MyInvocation.MyCommand.Path }
 function GetDirectoryNameOfFileAbove($markerfile) { $result = ""; $path = $MyInvocation.ScriptName; while(($path -ne "") -and ($path -ne $null) -and ($result -eq "")) { if(Test-Path $(Join-Path $path $markerfile)) {$result=$path}; $path = Split-Path $path }; if($result -eq ""){throw "Could not find marker file $markerfile in parent folders."} return $result; }
 $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
-function Stop($vm)
+function WaitStop($vm)
 {
     $vmName = $vm.Name
     Write-Host $vmName '-' $vm.PowerState
@@ -47,9 +47,13 @@ function Run()
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
 
     $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
+
+    $poweredOnVmsForBulkStop = Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’}
+    $poweredOnVmsForBulkStop | Stop-VM -Confirm:$false -RunAsync:$true
+
     foreach ($vm in $vms)
     {
-        Stop $vm
+        WaitStop $vm
         
         $time = $vm.Name.Replace($cloneNamePattern+"_","")
         [int]$year = 0
