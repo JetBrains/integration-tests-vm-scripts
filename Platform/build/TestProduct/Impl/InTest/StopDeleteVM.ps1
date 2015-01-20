@@ -9,33 +9,26 @@ function Get-ScriptDirectory { Split-Path $script:MyInvocation.MyCommand.Path }
 function GetDirectoryNameOfFileAbove($markerfile) { $result = ""; $path = $MyInvocation.ScriptName; while(($path -ne "") -and ($path -ne $null) -and ($result -eq "")) { if(Test-Path $(Join-Path $path $markerfile)) {$result=$path}; $path = Split-Path $path }; if($result -eq ""){throw "Could not find marker file $markerfile in parent folders."} return $result; }
 $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
-function WaitStop($vm)
-{
-    $vmName = $vm.Name
-    Write-Host $vmName '-' $vm.PowerState
-    while ($vm.PowerState -ne "PoweredOff")
-    {
-        Write-Host 'StopClone:'$vmName
-        Try{ Stop-VM -VM $vm -Confirm:$false -RunAsync:$true} Catch{}
-        sleep 5
-        $vm = Get-Vm -Name $vmName
-    }
-}
-
 function DeleteClone($vm)
 {
     $_vmName = $vm.Name
     Write-Host 'Try to Remove-VM:' $_vmName
 
     # for safety reason check that we are really removing a clone not a reference VM
-    if ($vm.Name.Contains('clone') -ne $true) { throw 'It is allowed to delete only machines, which contain word \"clone\" in its name.'}
-    
-    while ($vm -ne $null)
+    #{ throw 'It is allowed to delete only machines, which contain word \"clone\" in its name.'}
+    if ($vm.Name.Contains('clone') -eq $true) 
     {
-        Write-Host "Try to delete VM from disk"
-        Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false} Catch{}
-        sleep 5
-        $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
+        while ($vm -ne $null)
+        {
+            Write-Host "Try to delete VM from disk"
+            Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false} Catch{}
+            sleep 5
+            $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
+        }
+    }
+    else
+    {
+        Write-Host 'It is allowed to delete only machines, which contain word \"clone\" in its name.'
     }
 }
 
@@ -49,12 +42,15 @@ function Run()
     $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
 
     $poweredOnVmsForBulkStop = Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’}
-    $poweredOnVmsForBulkStop | Stop-VM -Confirm:$false -RunAsync:$true
+    if (@($poweredOnVmsForBulkStop).Count>0)
+    {
+        $task = $poweredOnVmsForBulkStop | Stop-VM -Confirm:$false -RunAsync:$true
+        if ($task.State -eq "Running")
+            { Wait-Task -Task $task } 
+    }
 
     foreach ($vm in $vms)
-    {
-        WaitStop $vm
-        
+    {       
         $time = $vm.Name.Replace($cloneNamePattern+"_","")
         [int]$year = 0
         [int]$month = 0

@@ -87,7 +87,7 @@ function TestsInMachines($machines, $FilesToTest)
             {
                 $i+=1
                 & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData -GuestCredentials $GuestCredentials -ArtifactsDir $ArtifactsDir
-                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData
+                & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\StopDeleteVM.ps1" -cloneNamePattern $machine.cloneName -ViServerData $ViServerData
             }
         }
         Sleep(10)
