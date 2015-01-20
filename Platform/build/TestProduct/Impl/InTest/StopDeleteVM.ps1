@@ -41,13 +41,12 @@ function Run()
 
     $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
 
-    $poweredOnVmsForBulkStop = Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’}
-    if (@($poweredOnVmsForBulkStop).Count>0)
-    {
-        $task = $poweredOnVmsForBulkStop | Stop-VM -Confirm:$false -RunAsync:$true
-        if ($task.State -eq "Running")
-            { Wait-Task -Task $task } 
+    #bulk poweroff
+    try{
+        Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’}| Stop-VM -Confirm:$false -RunAsync:$false
     }
+    catch{}
+        
 
     foreach ($vm in $vms)
     {       
