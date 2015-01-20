@@ -43,9 +43,12 @@ function Run()
 
     #bulk poweroff
     try{
-        Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’}| Stop-VM -Confirm:$false -RunAsync:$false
+        $machines = Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’} 
+        $machines | Stop-VM -Confirm:$false -RunAsync:$false
     }
-    catch{}
+    catch{
+    Write-Error $_
+    }
         
 
     foreach ($vm in $vms)
