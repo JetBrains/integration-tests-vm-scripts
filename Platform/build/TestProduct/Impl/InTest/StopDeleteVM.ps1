@@ -14,21 +14,12 @@ function DeleteClone($vm)
     $_vmName = $vm.Name
     Write-Host 'Try to Remove-VM:' $_vmName
 
-    # for safety reason check that we are really removing a clone not a reference VM
-    #{ throw 'It is allowed to delete only machines, which contain word \"clone\" in its name.'}
-    if ($vm.Name.Contains('clone') -eq $true) 
+    while ($vm -ne $null)
     {
-        while ($vm -ne $null)
-        {
-            Write-Host "Try to delete VM from disk"
-            Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false} Catch{}
-            sleep 5
-            $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
-        }
-    }
-    else
-    {
-        Write-Host 'It is allowed to delete only machines, which contain word \"clone\" in its name.'
+        Write-Host "Try to delete VM from disk"
+        Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false} Catch{}
+        sleep 5
+        $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
     }
 }
 
@@ -39,8 +30,6 @@ function Run()
     $ViServerPasword = $ViServerData[2]
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
 
-    $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
-
     #bulk poweroff
     try{
         $machines = Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern} | Where-Object {$_.powerstate -eq ‘PoweredOn’} 
@@ -50,10 +39,13 @@ function Run()
     Write-Error $_
     }
         
-
-    foreach ($vm in $vms)
+    # for safety reason check that we are really removing a clone not a reference VM
+    #{ throw 'It is allowed to delete only machines, which contain word \"_clone_\" in its name.'}
+    $cloneVms = @(Get-VM -Name "*_clone_*")
+    foreach ($vm in $cloneVms)
     {       
-        $time = $vm.Name.Replace($cloneNamePattern+"_","")
+        $index = $vm.Name.IndexOf("_")
+        $time = $vm.Name.Substring($index+1)
         [int]$year = 0
         [int]$month = 0
         [int]$day = 0
