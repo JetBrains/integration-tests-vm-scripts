@@ -17,7 +17,7 @@ function DeleteClone($vm)
     while ($vm -ne $null)
     {
         Write-Host "Try to delete VM from disk"
-        Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false} Catch{}
+        Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false } Catch{}
         sleep 5
         $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
     }
@@ -41,7 +41,7 @@ function Run()
         
     # for safety reason check that we are really removing a clone not a reference VM
     #{ throw 'It is allowed to delete only machines, which contain word \"_clone_\" in its name.'}
-    $cloneVms = @(Get-VM -Name "*_clone_*")
+    $cloneVms = @(Get-VM -Name "*_clone_*" | Where-Object {$_.powerstate -eq ‘PoweredOff’})
     foreach ($vm in $cloneVms)
     {       
         $index = $vm.Name.IndexOf("_")
