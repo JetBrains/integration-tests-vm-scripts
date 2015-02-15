@@ -11,7 +11,8 @@ param
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
     [Parameter(Position=0, Mandatory=$true)]$ViServerPasword,
-    [Parameter(Position=0, Mandatory=$false)]$vmStartupTimeout = 320
+    [Parameter(Position=0, Mandatory=$false)]$vmStartupTimeout = 320,
+    [Parameter(Position=0, Mandatory=$false)]$networkAdapter = ""
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -66,8 +67,13 @@ function Clone()
     $cloneSpec.Location = new-object Vmware.Vim.VirtualMachineRelocateSpec
     $cloneSpec.Location.DiskMoveType = [Vmware.Vim.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
  
-    $t = $sourceVMView.CloneVM( $cloneFolder, $cloneName, $cloneSpec ) #  requires VCenter
+    $t = $sourceVMView.CloneVM( $cloneFolder, $cloneName, $cloneSpec ) 
 
+    if ( $networkAdapter -ne "" )
+    {
+        get-vm $cloneName | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $networkAdapter -Confirm:$false 
+    }
+    
     Write-Host 't='$t
     Write-Host 'cloneName'$cloneName
 }
