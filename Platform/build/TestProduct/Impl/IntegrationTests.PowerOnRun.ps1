@@ -77,7 +77,8 @@ function TestsInMachines($machines, $FilesToTest)
             $srtJ = $job | Out-String | Write-Host
             $machine = $jobsM.Get_Item($job)
             $jobsM.Remove($job)
-            Receive-Job -Job $job |Write-Host          
+            Wait-Job -Job $job
+
             if ($i -lt @($FilesToTest).Count){
                 $pair = RunInOneMachine $machine $FilesToTest[$i]
                 $jobsM.Add($pair.job, $pair.machine)
