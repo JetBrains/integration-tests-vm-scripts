@@ -43,26 +43,20 @@ function Run()
     #{ throw 'It is allowed to delete only machines, which contain word \"_clone_\" in its name.'}
     $cloneVms = @(Get-VM -Name "*_clone_*" | Where-Object {$_.powerstate -eq ‘PoweredOff’})
     foreach ($vm in $cloneVms)
-    {       
+    {     
+        $datetime = Get-Date
         $index = $vm.Name.IndexOf("_")
-        $time = $vm.Name.Substring($index+1)
-        [int]$year = 0
-        [int]$month = 0
-        [int]$day = 0
-        $year_string = ""
-        $month_string = ""
-        $day_string = ""
+        $timeString = $vm.Name.Substring($index+1)
+        $template = 'yyyyMMdd_HHmmss'
         Try
             {
-                $year_string = $time.Substring(0,4);
-                $month_string = $time.Substring(4,2);
-                $day_string = $time.Substring(6,2);
-            } Catch {}
-        $res1 = [int32]::TryParse($year_string , [ref]$year )
-        $res2 = [int32]::TryParse($month_string , [ref]$month )
-        $res3 = [int32]::TryParse($day_string , [ref]$day )
+                $timeinfo = $timeString.Substring(0,15);
+                $datetime = [DateTime]::ParseExact($timeinfo, $template, $null) 
+            } Catch { 
+              Write-Host "Unable to parse datetime in the VM name. Deleting VM..."
+              DeleteClone $vm }
             
-        if (-not ($res1 -and $res2 -and $res3) -or ((Get-Date) - (Get-Date -Year $year -Month $month -Day $day)) -gt (New-TimeSpan -Days 1))
+        if ((Get-Date) - ($datetime) -gt (New-TimeSpan -Days 1))
         {
            DeleteClone $vm
         }
