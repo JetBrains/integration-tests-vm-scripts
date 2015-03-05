@@ -135,5 +135,6 @@ function DisconnectAll()
     Disconnect-VIServer -Server * -Force -Confirm:$false
 }
 
-Run
 
+$results = Run
+return $results[1]
