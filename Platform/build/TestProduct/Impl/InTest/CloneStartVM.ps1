@@ -7,6 +7,7 @@ param
 (
     [Parameter(Position=0, Mandatory=$true)]$name,
     [Parameter(Position=0, Mandatory=$true)]$cloneName,
+    [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$snapshotName,
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
@@ -37,7 +38,7 @@ function Clone()
 {
     $vmHost = get-vmhost
 
-    $datastore = Get-Datastore -VMHost $vmHost #-Name Datastore300
+    $datastore = Get-Datastore -VMHost $vmHost
     Write-Host TargetDataStore: $datastore
     $sourceVM =  $vmHost | get-vm -Name $name
     
@@ -50,6 +51,11 @@ function Clone()
     $cloneSpec.Snapshot = $snapshot
  
     $cloneSpec.Location = new-object Vmware.Vim.VirtualMachineRelocateSpec
+    if ((get-vm -Name $cloneNamePattern -ErrorAction Ignore) -ne $null) 
+    { 
+        $cloneSpec.Location.Pool = (get-vm $cloneNamePattern | get-resourcepool | get-view).MoRef
+        $cloneSpec.Location.Host = (get-vm $cloneNamePattern | get-vmhost | get-view).MoRef 
+    }
     $cloneSpec.Location.DiskMoveType = [Vmware.Vim.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
  
     $t = $sourceVMView.CloneVM( $cloneFolder, $cloneName, $cloneSpec ) #  requires VCenter

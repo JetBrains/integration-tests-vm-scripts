@@ -2,6 +2,7 @@ param
 (
     [Parameter(Position=0, Mandatory=$true)]$VmName,
     [Parameter(Position=0, Mandatory=$true)]$cloneName,
+    [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$ViServerAddress,
     [Parameter(Position=0, Mandatory=$true)]$ViServerLogin,
     [Parameter(Position=0, Mandatory=$true)]$ViServerPasword
@@ -26,7 +27,7 @@ function StartVM()
         $snapshotName = $VmName.split("+")[1];
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " Starting in VIServer " 'name: '$name 'snapshotName:' $snapshotName
 
-        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -snapshotName $snapshotName -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword)
+        $ht = (& (Join-Path (Get-ScriptDirectory) "CloneStartVM.ps1") -name $name -cloneName $cloneName -cloneNamePattern $cloneNamePattern -snapshotName $snapshotName -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword)
         
         Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " CloneStart done. "
 
