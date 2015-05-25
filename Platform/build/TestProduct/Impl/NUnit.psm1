@@ -12,7 +12,8 @@ function New-NUnitRunner
         $NUnitCpu = $null, # Inherit from current runtime by default
         $NUnitRuntime = $null, # Inherit from current runtime by default
         $NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
-        $NUnitExcludeCategory = "" # Empty by default. Use "," separator to provide several categories
+        $NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
+        $nunitfilter = "NUnit-2*" #"NUnit-*-resharper" # NOTE: if you'd like to take the freshest nunit (non-R#-patched), change the ilike parameter arg to just "NUnit-*"
     )
 
     # Fallback values for NUnit params (inheriting from the current runtime)
@@ -77,7 +78,6 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$NUnitCpu, [Parame
     Write-Host "Using TeamCity NUnit runner at $nunitexe"
 
     # Choose the NUnit version to use
-    $nunitfilter = "NUnit-*" #"NUnit-*-resharper" # NOTE: if you'd like to take the freshest nunit (non-R#-patched), change the ilike parameter arg to just "NUnit-*"
     $nunitver = $nunitexe | Split-Path -Parent | Join-Path -ChildPath "Test" | Get-ChildItem | where Name -ilike $nunitfilter | sort Name | select -Last 1 | foreach Name
     Write-Host "Using newest matching NUnit Version String $nunitver"
 
