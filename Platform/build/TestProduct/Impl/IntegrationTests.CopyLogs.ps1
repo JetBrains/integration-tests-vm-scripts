@@ -48,6 +48,9 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
     }
+    PSUsing ($netPath = New-Object JetBrains.OsTestFramework.Network.MappedNetworkPath $IpAddress, $UserName, $Password, "C:\ProgramData\Microsoft\Windows\WER") {
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($netPath.GuestNetworkPath, "$ArtifactsDir\JetWer")} Catch { Write-Host $error[0]}
+    }
 }
 
 function LoadTypes()
