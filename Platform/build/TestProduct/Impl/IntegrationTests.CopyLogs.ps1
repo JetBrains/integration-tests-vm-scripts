@@ -50,7 +50,7 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$ArtifactsDir\JetScreenshots")} Catch { Write-Host $error[0]}
-      Try {Copy-Item -path $traces -include "*.txt" -Destination "$ArtifactsDir\traces"} Catch { Write-Host $error[0]}
+      Try {robocopy $traces "$ArtifactsDir\traces" *.txt /s} Catch { Write-Host $error[0]}
     }
 }
 
