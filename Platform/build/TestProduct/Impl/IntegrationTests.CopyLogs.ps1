@@ -46,14 +46,12 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
       $jetLogs = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetLogs"
       $jetGolds = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetGolds"
       $jetScreenshots = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetScreenshots"
+      $traces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "CaptureTraces" | Join-Path -ChildPath "output_crash"
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$ArtifactsDir\JetScreenshots")} Catch { Write-Host $error[0]}
+      Try {robocopy $traces "$ArtifactsDir\traces" *.txt /s} Catch { Write-Host $error[0]}
     }
-    #PSUsing ($netPath = New-Object JetBrains.OsTestFramework.Network.MappedNetworkPath $IpAddress, $UserName, $Password, "C:\ProgramData\Microsoft\Windows\WER") 
-    #{
-    #  Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($netPath.GuestNetworkPath, "$ArtifactsDir\JetWer")} Catch { Write-Host $error[0]}
-    #}
 }
 
 function LoadTypes()
