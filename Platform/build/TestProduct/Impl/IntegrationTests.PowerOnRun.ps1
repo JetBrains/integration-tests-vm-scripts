@@ -77,7 +77,12 @@ function TestsInMachines($machines, $FilesToTest)
             $srtJ = $job | Out-String | Write-Host
             $machine = $jobsM.Get_Item($job)
             $jobsM.Remove($job)
-            Wait-Job -Job $job
+
+            if ($job.State -eq 'Failed') {
+              Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+            } else {
+              Write-Host (Receive-Job $job) -ForegroundColor Green 
+            }
 
             if ($i -lt @($FilesToTest).Count){
                 $pair = RunInOneMachine $machine $FilesToTest[$i]
