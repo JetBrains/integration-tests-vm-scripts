@@ -1,4 +1,4 @@
-TeamCity-extensions
+vcenter vm-scripts, teamcity and nunit
 ===================
 
 ## How to wrap TeamCity NUnit Runner with powershell? ##
