@@ -11,6 +11,8 @@ $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
 function DeleteClone($vm)
 {
+    $vm | Stop-VM -Confirm:$false -RunAsync:$false
+
     $_vmName = $vm.Name
     Write-Host 'Try to Remove-VM:' $_vmName
 
@@ -41,7 +43,7 @@ function Run()
         
     # for safety reason check that we are really removing a clone not a reference VM
     #{ throw 'It is allowed to delete only machines, which contain word \"_clone_\" in its name.'}
-    $cloneVms = @(Get-VM -Name "*_clone_*" | Where-Object {$_.powerstate -eq ‘PoweredOff’})
+    $cloneVms = @(Get-VM -Name "*_clone_*" )
     foreach ($vm in $cloneVms)
     {     
         $datetime = Get-Date
