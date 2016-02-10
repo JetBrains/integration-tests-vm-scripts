@@ -11,7 +11,9 @@ $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
 function DeleteClone($vm)
 {
-    $vm | Stop-VM -Confirm:$false -RunAsync:$false
+    if ($vm.powerstate -eq ‘PoweredOn’) {
+      $vm | Stop-VM -Confirm:$false -RunAsync:$false
+    }
 
     $_vmName = $vm.Name
     Write-Host 'Try to Remove-VM:' $_vmName
