@@ -18,13 +18,9 @@ function DeleteClone($vm)
     $_vmName = $vm.Name
     Write-Host 'Try to Remove-VM:' $_vmName
 
-    while ($vm -ne $null)
-    {
-        Write-Host "Try to delete VM from disk"
-        Try{ Remove-VM -VM $vm -DeletePermanently:$true -Confirm:$false } Catch{}
-        sleep 5
-        $vm = Get-Vm -Name $_vmName -ErrorAction SilentlyContinue
-    }
+    Write-Host "Delete VM from disk"
+    Try { Remove-VM -VM $vm -DeleteFromDisk:$true -Confirm:$false -RunAsync:$false }
+    Catch {Write-Host $error[0]}
 }
 
 function Run()
