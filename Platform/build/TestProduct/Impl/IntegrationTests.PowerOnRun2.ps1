@@ -35,7 +35,9 @@ function MakeScriptBlock($machine, $fileToTest)
 
 function RunInOneMachine($machine, $fileToTest)
 {
+    "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
   $Env:InTestVSVersionMajor = $fileToTest[1]
+  "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
   $Env:ExeToRunForTest = $fileToTest[2]
 
   
