@@ -1,6 +1,6 @@
 ﻿Param
 (
-    [Parameter(Position=0, Mandatory=$true)][String[String[]]]$FilesToTest, #InTestVSVersionMajor, ExeToRunForTests, fileToTest
+    [Parameter(Position=0, Mandatory=$true)][System.Collections.ArrayList]$FilesToTest, #InTestVSVersionMajor, ExeToRunForTests, fileToTest
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
     [Parameter(Position=0, Mandatory=$true)]$VmName,
     [Parameter(Position=0)]$CountOfMachinesToStart = 1,
