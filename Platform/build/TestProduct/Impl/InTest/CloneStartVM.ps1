@@ -38,7 +38,7 @@ function Clone()
 {
     $vmHost = get-vmhost
 
-    $datastore = Get-Datastore -VMHost $vmHost
+    $datastore = $sourceVM | get-datastore
     Write-Host TargetDataStore: $datastore
     $sourceVM =  $vmHost | get-vm -Name $name
     
@@ -54,6 +54,7 @@ function Clone()
     
     $cloneSpec.Location.Pool = ($sourceVM | get-resourcepool | get-view).MoRef
     $cloneSpec.Location.Host = ($sourceVM | get-vmhost | get-view).MoRef 
+    $cloneSpec.Location.Datastore = ($datastore | get-view).MoRef
     
     $cloneSpec.Location.DiskMoveType = [Vmware.Vim.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
  
