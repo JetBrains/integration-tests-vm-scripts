@@ -38,9 +38,9 @@ function Clone()
 {
     $vmHost = get-vmhost
 
+    $sourceVM =  $vmHost | get-vm -Name $name
     $datastore = $sourceVM | get-datastore
     Write-Host TargetDataStore: $datastore
-    $sourceVM =  $vmHost | get-vm -Name $name
     
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
