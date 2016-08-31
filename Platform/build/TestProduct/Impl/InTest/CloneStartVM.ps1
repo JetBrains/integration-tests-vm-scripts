@@ -40,7 +40,7 @@ function Clone()
 
     $sourceVM =  $vmHost | get-vm -Name $name
     $datastore = $sourceVM | get-datastore
-    Write-Host TargetDataStore: $datastore
+    Write-Host TargetDataStore: $datastore, FreeSpaceGB: ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))Gb
     
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
