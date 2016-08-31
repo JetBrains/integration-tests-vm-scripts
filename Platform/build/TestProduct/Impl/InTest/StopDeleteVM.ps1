@@ -56,7 +56,7 @@ function Run()
               Write-Host "Unable to parse datetime in the VM name. Deleting VM..."
               DeleteClone $vm }
             
-        if ((Get-Date) - ($datetime) -gt (New-TimeSpan -Days 1))
+        if ((Get-Date) - ($datetime) -gt (New-TimeSpan -Hours 23))
         {
            DeleteClone $vm
         }
