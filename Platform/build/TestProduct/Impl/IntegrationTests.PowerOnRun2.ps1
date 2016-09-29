@@ -117,6 +117,25 @@ function TestsInMachines($machines, $FilesToTest)
   }
 }
 
+function FreeSpace()
+{
+    $vmHost = get-vmhost
+
+    $sourceVM =  $vmHost | get-vm -Name $VmName
+    $datastore = $sourceVM | get-datastore
+
+    $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
+    while ($freespaceGb -le 100) {
+      $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
+      Write-Host TargetDataStore: $datastore, FreeSpaceGB: $freespaceGb Gb
+      $cloneVmToDelete = @($datastore | Get-VM -Name  "*_clone_*" | where {$_.PowerState -eq "PoweredOff"} | Select -First 1)
+      if ($cloneVmToDelete.Count -eq 0) {break}
+      Write-Host Delete vm $cloneVmToDelete.Name
+      try{Remove-VM -VM $cloneVmToDelete -DeleteFromDisk:$true -Confirm:$false -RunAsync:$false}
+      Catch {Write-Host $error[0]}
+    }
+}
+
 function Main()
 {
     $env:InTestUserName = $GuestCredentials[0]
@@ -127,6 +146,8 @@ function Main()
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
     }
+
+    FreeSpace | Write-Host
 
     TestsInMachines $machines $FilesToTest |Write-Host
     return $machines
