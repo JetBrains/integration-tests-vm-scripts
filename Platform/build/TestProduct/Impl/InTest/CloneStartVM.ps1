@@ -40,7 +40,17 @@ function Clone()
 
     $sourceVM =  $vmHost | get-vm -Name $name
     $datastore = $sourceVM | get-datastore
-    Write-Host TargetDataStore: $datastore, FreeSpaceGB: ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))Gb
+
+    #free space
+    $freespaceGb =0
+    while ($freespaceGb -le 100) {
+      $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
+      Write-Host TargetDataStore: $datastore, FreeSpaceGB: $freespaceGb Gb
+      $cloneVmToDelete = @($datastore | Get-VM -Name  "*_clone_*" | where {$_.PowerState -eq "PoweredOff"} | Select -First 1)
+      if ($cloneVmToDelete.Count -eq 0) {break}
+      Write-Host Delete vm $cloneVmToDelete.Name
+      Remove-VM -VM $cloneVmToDelete -DeleteFromDisk:$true -Confirm:$false -RunAsync:$false
+    }
     
     $sourceVMView = $sourceVM | Get-View
     $cloneFolder = $sourceVMView.Parent
