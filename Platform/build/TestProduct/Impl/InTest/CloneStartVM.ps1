@@ -62,7 +62,10 @@ function Clone()
 
     $targetVM =  $vmHost | get-vm -Name $cloneName
     $targetVM | Get-FloppyDrive | Remove-FloppyDrive -Confirm:$false
-    #$targetVM | Get-VMResourceConfiguration | Set-VMResourceConfiguration -CPULimitMhz $sourceVM.VMResourceConfiguration.CpuLimitMhz
+    
+    if ($sourceVM.VMResourceConfiguration.CpuLimitMhz > 0) {
+      $targetVM | Get-VMResourceConfiguration | Set-VMResourceConfiguration -CPULimitMhz $sourceVM.VMResourceConfiguration.CpuLimitMhz
+    }
 
     Write-Host 't='$t
     Write-Host 'cloneName'$cloneName
