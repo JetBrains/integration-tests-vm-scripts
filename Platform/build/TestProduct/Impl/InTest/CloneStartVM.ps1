@@ -60,6 +60,10 @@ function Clone()
  
     $t = $sourceVMView.CloneVM( $cloneFolder, $cloneName, $cloneSpec ) #  requires VCenter
 
+    $targetVM =  $vmHost | get-vm -Name $cloneName
+    $targetVM | Get-FloppyDrive | Remove-FloppyDrive -Confirm:$false
+    $targetVM | Get-VMResourceConfiguration | Set-VMResourceConfiguration -CPULimitMhz $sourceVM.VMResourceConfiguration.CpuLimitMhz
+
     Write-Host 't='$t
     Write-Host 'cloneName'$cloneName
 }
