@@ -121,7 +121,9 @@ function FreeSpace()
 {
     $vmHost = get-vmhost
 
-    $sourceVM =  $vmHost | get-vm -Name $VmName
+    $name = $VmName.split("+")[0]
+
+    $sourceVM =  $vmHost | get-vm -Name $name
     $datastore = $sourceVM | get-datastore
 
     $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
