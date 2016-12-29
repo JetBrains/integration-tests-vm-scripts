@@ -125,7 +125,7 @@ function FreeSpace()
     $datastore = $sourceVM | get-datastore
 
     $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
-    while ($freespaceGb -le 100) {
+    while ($freespaceGb -le 150) {
       $freespaceGb = ([Math]::Round(($datastore.ExtensionData.Summary.FreeSpace)/1GB,0))
       Write-Host TargetDataStore: $datastore, FreeSpaceGB: $freespaceGb Gb
       $cloneVmToDelete = @($datastore | Get-VM -Name  "*_clone_*" | where {$_.PowerState -eq "PoweredOff"} | Select -First 1)
