@@ -119,6 +119,8 @@ function TestsInMachines($machines, $FilesToTest)
 
 function FreeSpace()
 {
+    & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2] | Out-Null
+
     $vmHost = get-vmhost
 
     $name = $VmName.split("+")[0]
