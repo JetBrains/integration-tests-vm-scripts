@@ -34,13 +34,12 @@ function MakeScriptBlock($machine, $fileToTest)
 }
 
 function RunInOneMachine($machine, $fileToTest)
-{
+{ 
     "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
-  $Env:InTestVSVersionMajor = $fileToTest[1]
-  "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
-  $Env:ExeToRunForTest = $fileToTest[2]
+    $Env:InTestVSVersionMajor = $fileToTest[1]
+    "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
+    $Env:ExeToRunForTest = $fileToTest[2]
 
-  
     $sb = MakeScriptBlock $machine $fileToTest[0]
     $job = Start-Job -scriptblock $sb
     return @{job=$job; machine =$machine}
@@ -50,6 +49,8 @@ function TestsInMachines($machines, $FilesToTest)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
   $Env:InTestRunInMainHive = "True"
+
+  
 
   #Load helper module before starting parallel run 
   & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
@@ -111,7 +112,12 @@ function TestsInMachines($machines, $FilesToTest)
   {
     Write-Host "Running tests in single machine."
     foreach ($fileToTest in $FilesToTest){
-        $sb = MakeScriptBlock @($machines)[0] $fileToTest
+        "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
+        $Env:InTestVSVersionMajor = $fileToTest[1]
+        "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
+        $Env:ExeToRunForTest = $fileToTest[2]
+        
+        $sb = MakeScriptBlock @($machines)[0] $fileToTest[0]
         Invoke-Command -ScriptBlock $sb
     }
   }
