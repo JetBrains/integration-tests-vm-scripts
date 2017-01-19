@@ -51,13 +51,13 @@ function Run()
         $template = 'MMdd_HHmmss'
         Try
             {
-                $timeinfo = $timeString.Substring(0,15);
+                $timeinfo = $timeString.Substring(0,11);
                 $datetime = [DateTime]::ParseExact($timeinfo, $template, $null) 
             } Catch { 
               Write-Host "Unable to parse datetime in the VM name. Deleting VM..."
               DeleteClone $vm }
             
-        if ((Get-Date) - ($datetime) -gt (New-TimeSpan -Hours 23))
+        if ([math]::abs(((Get-Date) - ($datetime)).TotalHours) -gt 23)
         {
            DeleteClone $vm
         }
