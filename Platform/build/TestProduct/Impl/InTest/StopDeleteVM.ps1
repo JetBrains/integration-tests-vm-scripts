@@ -48,7 +48,7 @@ function Run()
         $datetime = Get-Date
         $index = $vm.Name.IndexOf("_")
         $timeString = $vm.Name.Substring($index+1)
-        $template = 'yyyyMMdd_HHmmss'
+        $template = 'MMdd_HHmmss'
         Try
             {
                 $timeinfo = $timeString.Substring(0,15);
