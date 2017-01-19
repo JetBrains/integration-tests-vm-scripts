@@ -48,9 +48,7 @@ function RunInOneMachine($machine, $fileToTest)
 function TestsInMachines($machines, $FilesToTest)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
-  $Env:InTestRunInMainHive = "True"
-
-  
+  $Env:InTestRunInMainHive = "True"  
 
   #Load helper module before starting parallel run 
   & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
@@ -111,7 +109,7 @@ function TestsInMachines($machines, $FilesToTest)
   else # without parallel run
   {
     Write-Host "Running tests in single machine."
-    foreach ($fileToTest in $FilesToTest){
+    foreach ($fileToTest in @($FilesToTest)){
         "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
         $Env:InTestVSVersionMajor = $fileToTest[1]
         "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
