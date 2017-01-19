@@ -45,7 +45,7 @@ function Run()
     $cloneVms = @(Get-VM -Name "*_clone_*" )
     foreach ($vm in $cloneVms)
     {     
-        [ref]$datetime = Get-Date
+        [System.Management.Automation.PSReference]$datetime = Get-Date
         $index = $vm.Name.IndexOf("_")
         $timeString = $vm.Name.Substring($index+1)
         $template = 'MMdd_HHmmss'
@@ -56,9 +56,10 @@ function Run()
                 if ([DateTime]::TryParseExact($timeinfo, $template, $null, [System.Globalization.DateTimeStyles]::None,$datetime))
                 {
                 }
-                else {if ([DateTime]::TryParseExact($timeinfo, $oldTemplate, $null, [System.Globalization.DateTimeStyles]::None,$datetime))
-                {
-                }}
+                else {
+                $timeinfo = $timeString.Substring(0,$oldTemplate.Length);
+                $datetime = [DateTime]::ParseExact($timeinfo, $oldTemplate, $null) 
+                }
             } Catch { 
               Write-Host "Unable to parse datetime in the VM name. Deleting VM..."
               DeleteClone $vm }
