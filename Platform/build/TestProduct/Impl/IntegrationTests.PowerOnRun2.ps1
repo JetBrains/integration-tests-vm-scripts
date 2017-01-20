@@ -45,7 +45,7 @@ function RunInOneMachine($machine, $fileToTest)
     return @{job=$job; machine =$machine}
 }
 
-function TestsInMachines($machines, $FilesToTest)
+function TestsInMachines($machines)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
   $Env:InTestRunInMainHive = "True"  
@@ -109,7 +109,7 @@ function TestsInMachines($machines, $FilesToTest)
   else # without parallel run
   {
     Write-Host "Running tests in single machine."
-    foreach ($fileToTest in @($FilesToTest)){
+    foreach ($fileToTest in $FilesToTest){
         "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
         $Env:InTestVSVersionMajor = $fileToTest[1]
         "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
@@ -157,7 +157,7 @@ function Main()
 
     FreeSpace | Write-Host
 
-    TestsInMachines $machines $FilesToTest |Write-Host
+    TestsInMachines $machines |Write-Host
     return $machines
 }
 
