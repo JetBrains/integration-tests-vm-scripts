@@ -14,7 +14,7 @@ function PowerOn
 {
     $cloneNames = @()
     for ($i=0; $i -lt $CountOfMachinesToStart; $i++) {
-        $cloneNames += $cloneNamePattern+'_'+[System.DateTime]::Now.ToString("yyyyMMdd_HHmmss")+'_'+$VmName+'_'+'clone'+'_'+$i
+        $cloneNames += $cloneNamePattern+'_'+[System.DateTime]::Now.ToString("MMdd_HHmmss")+'_'+$VmName+'_'+'clone'+'_'+$i
     }
 
     $jobs = @()
