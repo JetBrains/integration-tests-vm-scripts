@@ -65,7 +65,7 @@ function Run()
               DeleteClone $vm 
             }
             
-        if ([math]::abs(((Get-Date) - ($datetime)).TotalHours) -gt 23)
+        if ([math]::abs(((Get-Date) - ($datetime)).TotalHours) -gt 22)
         {
            DeleteClone $vm
         }
