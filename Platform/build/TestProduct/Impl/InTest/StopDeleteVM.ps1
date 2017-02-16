@@ -43,9 +43,10 @@ function Run()
     # for safety reason check that we are really removing a clone not a reference VM
     #{ throw 'It is allowed to delete only machines, which contain word \"_clone_\" in its name.'}
     $cloneVms = @(Get-VM -Name "*_clone_*" )
+    Write-Host $cloneVms.Count
     foreach ($vm in $cloneVms)
     {     
-        $datetime = Get-Date
+        $result = Get-Date
         $index = $vm.Name.IndexOf("_")
         $timeString = $vm.Name.Substring($index+1)
         $template = 'MMdd_HHmmss'
@@ -53,19 +54,20 @@ function Run()
         Try
             {
                 $timeinfo = $timeString.Substring(0,$template.Length);
-                if ([DateTime]::TryParseExact($timeinfo, $template, $null, [System.Globalization.DateTimeStyles]::None,[System.Management.Automation.PSReference]$datetime))
+                if ([DateTime]::TryParseExact($timeinfo, $template, $null, [System.Globalization.DateTimeStyles]::None,[System.Management.Automation.PSReference]$result)) #for some reason doesn't set the $result
                 {
+                  $result = [DateTime]::ParseExact($timeinfo, $template, $null) 
                 }
                 else {
                 $timeinfo = $timeString.Substring(0,$oldTemplate.Length);
-                $datetime = [DateTime]::ParseExact($timeinfo, $oldTemplate, $null) 
+                $result = [DateTime]::ParseExact($timeinfo, $oldTemplate, $null) 
                 }
             } Catch { 
               Write-Host "Unable to parse datetime in the VM name. Deleting VM..."
               DeleteClone $vm 
             }
             
-        if ([math]::abs(((Get-Date) - ($datetime)).TotalHours) -gt 22)
+        if ([math]::abs(((Get-Date) - ($result)).TotalHours) -gt 22)
         {
            DeleteClone $vm
         }
