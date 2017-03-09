@@ -91,7 +91,7 @@ function Run
 {
     & (Join-Path (Get-ScriptDirectory) "InTest\ViServer.Connect.ps1") -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2] | Out-Null
     
-    $vms = @(Get-VM -Name $cloneNamePattern* | where {$_.Name -ne $cloneNamePattern})
+    $vms = @(Get-VM -Name $cloneNamePattern*_clone_*)
     foreach ($vm in $vms)
     {
         if ($vm.PowerState -ne "PoweredOff")
