@@ -48,12 +48,14 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
       $jetScreenshots = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\JetScreenshots"
       $crashTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces\output_crash"
       $hangTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces\output"
+      $hangTraces64 = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces.x64\output"
       $activityLogBase = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Users\User\AppData\Roaming\Microsoft\VisualStudio"
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$ArtifactsDir\JetScreenshots")} Catch { Write-Host $error[0]}
       Try {robocopy $crashTraces "$ArtifactsDir\crashTraces" *.txt /s} Catch { Write-Host $error[0]}
       Try {robocopy $hangTraces "$ArtifactsDir\hangTraces" *.txt /s} Catch { Write-Host $error[0]}
+      Try {robocopy $hangTraces64 "$ArtifactsDir\hangTraces.x64" *.txt /s} Catch { Write-Host $error[0]}
       Try {robocopy $activityLogBase "$ArtifactsDir\activityLogs" ActivityLog* /E /S} Catch { Write-Host $error[0]}
     }
 }
