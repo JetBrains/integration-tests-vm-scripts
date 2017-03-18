@@ -41,18 +41,20 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
     Write-Host "Coping Logs from" $IpAddress ", using login:" $UserName "and password:" $Password
     # Copy Logs from VM
     LoadTypes
-    PSUsing ($netPath = New-Object JetBrains.OsTestFramework.Network.MappedNetworkPath $IpAddress, $UserName, $Password, "C:\Tmp") {
+    PSUsing ($netPath = New-Object JetBrains.OsTestFramework.Network.MappedNetworkPath $IpAddress, $UserName, $Password, "C:\") {
       
-      $jetLogs = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetLogs"
-      $jetGolds = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetGolds"
-      $jetScreenshots = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "JetScreenshots"
-      $crashTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "CaptureTraces" | Join-Path -ChildPath "output_crash"
-      $hangTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "CaptureTraces" | Join-Path -ChildPath "output"
+      $jetLogs = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\JetLogs"
+      $jetGolds = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\JetGolds"
+      $jetScreenshots = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\JetScreenshots"
+      $crashTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces\output_crash"
+      $hangTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces\output"
+      $activityLogBase = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Users\User\AppData\Roaming\Microsoft\VisualStudio"
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
       Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$ArtifactsDir\JetScreenshots")} Catch { Write-Host $error[0]}
       Try {robocopy $crashTraces "$ArtifactsDir\crashTraces" *.txt /s} Catch { Write-Host $error[0]}
       Try {robocopy $hangTraces "$ArtifactsDir\hangTraces" *.txt /s} Catch { Write-Host $error[0]}
+      Try {robocopy $activityLogBase "$ArtifactsDir\activityLogs" ActivityLog* /E /S} Catch { Write-Host $error[0]}
     }
 }
 
