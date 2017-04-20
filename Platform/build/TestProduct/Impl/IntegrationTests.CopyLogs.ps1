@@ -50,13 +50,15 @@ function CopyLogs([string]$IpAddress, [string]$UserName, [string]$Password)
       $hangTraces = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces\output"
       $hangTraces64 = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Tmp\CaptureTraces.x64\output"
       $activityLogBase = Join-Path -Path $netPath.GuestNetworkPath -ChildPath "Users\User\AppData\Roaming\Microsoft\VisualStudio"
-      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$ArtifactsDir\JetLogs")} Catch { Write-Host $error[0]}
-      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$ArtifactsDir\JetGolds")} Catch { Write-Host $error[0]}
-      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$ArtifactsDir\JetScreenshots")} Catch { Write-Host $error[0]}
-      Try {robocopy $crashTraces "$ArtifactsDir\crashTraces" *.txt /s} Catch { Write-Host $error[0]}
-      Try {robocopy $hangTraces "$ArtifactsDir\hangTraces" *.txt /s} Catch { Write-Host $error[0]}
-      Try {robocopy $hangTraces64 "$ArtifactsDir\hangTraces.x64" *.txt /s} Catch { Write-Host $error[0]}
-      Try {robocopy $activityLogBase "$ArtifactsDir\activityLogs" ActivityLog* /E /S} Catch { Write-Host $error[0]}
+
+      $DestPath = "$ArtifactsDir\$IpAddress"
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetLogs, "$DestPath\JetLogs")} Catch { Write-Host $error[0]}
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetGolds, "$DestPath\JetGolds")} Catch { Write-Host $error[0]}
+      Try {[JetBrains.OsTestFramework.Common.FileOperations]::CopyFiles($jetScreenshots, "$DestPath\JetScreenshots")} Catch { Write-Host $error[0]}
+      Try {robocopy $crashTraces "$DestPath\crashTraces" *.txt /s} Catch { Write-Host $error[0]}
+      Try {robocopy $hangTraces "$DestPath\hangTraces" *.txt /s} Catch { Write-Host $error[0]}
+      Try {robocopy $hangTraces64 "$DestPath\hangTraces.x64" *.txt /s} Catch { Write-Host $error[0]}
+      Try {robocopy $activityLogBase "$DestPath\activityLogs" ActivityLog* /E /S} Catch { Write-Host $error[0]}
     }
 }
 
