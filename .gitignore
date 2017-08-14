@@ -1,3 +1,7 @@
 /Platform/Tools/PowerShell/JetCmdlet/bin/Debug
 /Platform/Tools/PowerShell/JetCmdlet/obj/Debug
 Platform/build/TestProduct/Impl/Local.ps1
+.idea/integration-tests-vm-scripts.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
