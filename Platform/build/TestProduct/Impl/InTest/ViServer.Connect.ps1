@@ -9,15 +9,7 @@ param
 
 function Init()
 {
-if ((Get-PSSnapin -Name vmware.VimAutomation.core -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Host "loading VimAutomation modules loading......." -ForegroundColor     green
-    Add-PSSnapin vmware.VimAutomation.core
-}
-Else {
-
-    Write-Host " Vmware Automation Tools has been loaded already" -ForegroundColor Yellow
-}
+Get-Module -ListAvailable vmware.VimAutomation.core | Import-Module
 }
 
 function Connect()
