@@ -72,7 +72,7 @@ function Clone()
     Write-Host "memoryReservationLockedToMax"
     $spec = New-Object VMware.Vim.VirtualMachineConfigSpec
     $spec.memoryReservationLockedToMax = $true
-    $targetVM.ExtensionData.ReconfigVM_Task($spec)
+    $targetVM.ExtensionData.ReconfigVM_Task($spec) | Out-Null
 
     Write-Host 't='$t
     Write-Host 'cloneName'$cloneName
