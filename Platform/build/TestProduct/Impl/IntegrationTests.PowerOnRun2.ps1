@@ -18,7 +18,7 @@ $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
 function MakeScriptBlock($machine, $fileToTest, $nunitexe)
 {
-    Write-Host Running tests for: $fileToTest in $machine.cloneName
+    Write-Host Running tests for: $fileToTest in $machine.cloneName with $nunitexe
     $env:InTestIpAddress = $machine.data.IpAddress
     $params = @{fileToTest = """$fileToTest""";nunitexe = """$nunitexe"""}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
@@ -140,7 +140,7 @@ function FreeSpace() {
 }
 
 function PrepareNUnit() {
-    $TempDir = [System.IO.Path]::GetTempPath()+ "\InTestNUnit"
+    $TempDir = [System.IO.Path]::GetTempPath()+'InTestNUnit'
     If (Test-Path $TempDir){
         Remove-Item $TempDir\* -recurse
     }
