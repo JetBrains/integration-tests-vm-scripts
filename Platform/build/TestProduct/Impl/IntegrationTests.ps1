@@ -1,8 +1,5 @@
 ﻿Param
 (
-    [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
-    [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
-    
     [Parameter(Position=0, Mandatory=$true)][System.Collections.ArrayList]$FilesToTest,  #InTestVSVersionMajor, ExeToRunForTests, fileToTest
     [Parameter(Position=0)]$CountOfMachinesToStart = 1,
     [Parameter(Position=0, Mandatory=$true)]$cloneNamePattern,
@@ -25,7 +22,6 @@ function Run
     Try {
         & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.PowerOnRun2.ps1" -FilesToTest $FilesToTest `
             -cloneNamePattern $cloneNamePattern -VmName $VmName -CountOfMachinesToStart $CountOfMachinesToStart -NUnitExcludeCategory $NUnitExcludeCategory -NUnitIncludeCategory $NUnitIncludeCategory `
-            -NUnitCpu $NUnitCpu -NUnitRuntime $NUnitRuntime `
             -ViServerData $ViServerData -GuestCredentials $GuestCredentials
         
         & "$ProductHomeDir\Platform\build\TestProduct\Impl\IntegrationTests.CopyLogs.ps1" -cloneNamePattern $cloneNamePattern -ViServerData $ViServerData -GuestCredentials $GuestCredentials

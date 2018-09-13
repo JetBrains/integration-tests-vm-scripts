@@ -7,8 +7,6 @@
     [Parameter(Position=0)]$NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
     [Parameter(Position=0)]$NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
         
-    [Parameter(Position=0)]$NUnitCpu = $null, # Inherit from current runtime by default
-    [Parameter(Position=0)]$NUnitRuntime = $null, # Inherit from current runtime by default
     [Parameter(Position=0, Mandatory=$true)][String[]]$ViServerData,
     [Parameter(Position=0, Mandatory=$true)][String[]]$GuestCredentials,
     [Parameter(Position=0)]$ArtifactsDir
@@ -25,8 +23,6 @@ function MakeScriptBlock($machine, $fileToTest)
     $params = @{fileToTest = """$fileToTest""";}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
-    if ($NUnitCpu -ne $null)           { $params.Add("NUnitCpu", $NUnitCpu) }
-    if ($NUnitRuntime -ne $null)       { $params.Add("NUnitRuntime", $NUnitRuntime) }
     [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1"
     $block = [scriptblock]::Create("&'$scriptpath' $(&{$args} @params)")
     Write-Host $block
