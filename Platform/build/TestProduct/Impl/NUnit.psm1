@@ -62,7 +62,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
         if ($where -ne "") {$nunitargs+=$where}
 
         Write-Host "Runner params: $nunitargs"
-        & """$nunitexe""" $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
+        & $nunitexe $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
     }
     return $script.GetNewClosure()
 }
