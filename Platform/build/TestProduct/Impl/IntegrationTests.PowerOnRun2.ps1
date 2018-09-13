@@ -41,7 +41,7 @@ function RunInOneMachine($machine, $fileToTest, $nunitexe)
     return @{job=$job; machine =$machine}
 }
 
-function TestsInMachines($machines, $nunitexe)
+function TestsInMachines($nunitexe, $machines)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
   $Env:InTestRunInMainHive = "True"  
@@ -170,7 +170,6 @@ function PrepareNUnit() {
     Copy-Item -Path $tools3 -Destination $tools -Recurse | Write-Host
     
     $nunitexe = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools\nunit3-console.exe"
-    Write-Host $nunitexe
     return $nunitexe
 }
 
@@ -190,7 +189,7 @@ function Main()
     $nunitexe = PrepareNUnit
     Write-Host $nunitexe
 
-    TestsInMachines $machines $nunitexe |Write-Host
+    TestsInMachines $nunitexe $machines | Write-Host
     return $machines
 }
 
