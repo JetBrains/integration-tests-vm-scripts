@@ -142,10 +142,10 @@ function FreeSpace() {
 function PrepareNUnit() {
     $TempDir = [System.IO.Path]::GetTempPath()+'InTestNUnit'
     If (Test-Path $TempDir){
-        Remove-Item $TempDir\* -recurse
+        Remove-Item $TempDir\* -recurse |Out-Null
     }
     Else{
-        New-Item -ItemType directory -Path $TempDir
+        New-Item -ItemType directory -Path $TempDir |Out-Null
     }
 
     $nugetPath=[System.IO.Path]::GetTempPath()+"nuget.exe"
