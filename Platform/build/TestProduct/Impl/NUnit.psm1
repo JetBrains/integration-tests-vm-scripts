@@ -33,14 +33,14 @@ function MakeWhereString([Parameter(Mandatory=$false)][string]$NUnitIncludeCateg
 
     if($NUnitIncludeCategory)
     {
-        $clauses += $NUnitIncludeCategory.Split(",") | %{ "(cat == '$_')" }
+        $clauses += $NUnitIncludeCategory.Split(",") | %{ "(cat=='$_')" }
     }
     if($NUnitExcludeCategory)
     {
-        $clauses += $NUnitExcludeCategory.Split(",") | %{ "(cat != '$_')" }
+        $clauses += $NUnitExcludeCategory.Split(",") | %{ "(cat!='$_')" }
     }
 
-    return "--where `"$($clauses -join " && ")`""
+    return "--where=$($clauses -join " && ")"
 }
 
 function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parameter(Mandatory=$false)]$NUnitIncludeCategory, [Parameter(Mandatory=$false)]$NUnitExcludeCategory) {
@@ -62,7 +62,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
         if ($where -ne "") {$nunitargs+=$where}
 
         Write-Host "Runner params: $nunitargs"
-        & $nunitexe $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
+        & "$nunitexe" $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
     }
     return $script.GetNewClosure()
 }
