@@ -51,7 +51,7 @@ function TestsInMachines($machines, $nunitexe)
 
   # parallel run
   if (@($machines).Count -gt 1) {
-    Write-Host "Running tests in multiple machines."
+    Write-Host "Running tests in multiple machines. $nunitexe"
     $i=0
     $jobsM=@{}
     foreach ($machine in $machines){
