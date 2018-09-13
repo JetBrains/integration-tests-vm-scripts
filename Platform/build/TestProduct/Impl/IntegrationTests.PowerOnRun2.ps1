@@ -170,6 +170,7 @@ function PrepareNUnit() {
     Copy-Item -Path $tools3 -Destination $tools -Recurse | Write-Host
     
     $nunitexe = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools\nunit3-console.exe"
+    Write-Host $nunitexe
     return $nunitexe
 }
 
@@ -187,6 +188,7 @@ function Main()
     FreeSpace | Write-Host
 
     $nunitexe = PrepareNUnit
+    Write-Host $nunitexe
 
     TestsInMachines $machines $nunitexe |Write-Host
     return $machines
