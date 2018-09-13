@@ -16,11 +16,11 @@
 function GetDirectoryNameOfFileAbove($markerfile) { $result = ""; $path = $MyInvocation.ScriptName; while(($path -ne "") -and ($path -ne $null) -and ($result -eq "")) { if(Test-Path $(Join-Path $path $markerfile)) {$result=$path}; $path = Split-Path $path }; if($result -eq ""){throw "Could not find marker file $markerfile in parent folders."} return $result; }
 $ProductHomeDir = GetDirectoryNameOfFileAbove "Product.Root"
 
-function MakeScriptBlock($machine, $fileToTest)
+function MakeScriptBlock($machine, $fileToTest, $nunitexe)
 {
     Write-Host Running tests for: $fileToTest in $machine.cloneName
     $env:InTestIpAddress = $machine.data.IpAddress
-    $params = @{fileToTest = """$fileToTest""";}
+    $params = @{fileToTest = """$fileToTest""";nunitexe = """$nunitexe"""}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
     [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1"
@@ -29,19 +29,19 @@ function MakeScriptBlock($machine, $fileToTest)
     return $block
 }
 
-function RunInOneMachine($machine, $fileToTest)
+function RunInOneMachine($machine, $fileToTest, $nunitexe)
 { 
     "Set InTestVSVersionMajor: " + $fileToTest[1] |Write-Host
     $Env:InTestVSVersionMajor = $fileToTest[1]
     "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
     $Env:ExeToRunForTest = $fileToTest[2]
 
-    $sb = MakeScriptBlock $machine $fileToTest[0]
+    $sb = MakeScriptBlock $machine $fileToTest[0] $nunitexe
     $job = Start-Job -scriptblock $sb
     return @{job=$job; machine =$machine}
 }
 
-function TestsInMachines($machines)
+function TestsInMachines($machines, $nunitexe)
 {
   $Env:InTestRunInVirtualEnvironment = "True"
   $Env:InTestRunInMainHive = "True"  
@@ -55,7 +55,7 @@ function TestsInMachines($machines)
     $i=0
     $jobsM=@{}
     foreach ($machine in $machines){
-        $pair = RunInOneMachine $machine @($FilesToTest)[$i]
+        $pair = RunInOneMachine $machine @($FilesToTest)[$i] $nunitexe
         $jobsM.Add($pair.job, $pair.machine)
         Start-Sleep -s 10 # if JetCmdLet is not compiled both threads will try to compile it
         $i+=1
@@ -86,7 +86,7 @@ function TestsInMachines($machines)
             }
 
             if ($i -lt @($FilesToTest).Count){
-                $pair = RunInOneMachine $machine $FilesToTest[$i]
+                $pair = RunInOneMachine $machine $FilesToTest[$i] $nunitexe
                 $jobsM.Add($pair.job, $pair.machine)
                 $i+=1
             }
@@ -111,14 +111,13 @@ function TestsInMachines($machines)
         "Set ExeToRunForTest: " + $fileToTest[2] |Write-Host
         $Env:ExeToRunForTest = $fileToTest[2]
         
-        $sb = MakeScriptBlock @($machines)[0] $fileToTest[0]
+        $sb = MakeScriptBlock @($machines)[0] $fileToTest[0] $nunitexe
         Invoke-Command -ScriptBlock $sb
     }
   }
 }
 
-function FreeSpace()
-{
+function FreeSpace() {
     & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\ViServer.Connect.ps1" -ViServerAddress $ViServerData[0] -ViServerLogin $ViServerData[1] -ViServerPasword $ViServerData[2] | Out-Null
 
     $vmHost = get-vmhost
@@ -140,6 +139,40 @@ function FreeSpace()
     }
 }
 
+function PrepareNUnit() {
+    $TempDir = [System.IO.Path]::GetTempPath()+ "\InTestNUnit"
+    If (Test-Path $TempDir){
+        Remove-Item $TempDir\* -recurse
+    }
+    Else{
+        New-Item -ItemType directory -Path $TempDir
+    }
+
+    $nugetPath=[System.IO.Path]::GetTempPath()+"nuget.exe"
+    Write-Host $nugetPath
+    If (-not (Test-Path $nugetPath)){
+        $webclient = New-Object System.Net.WebClient
+        $webclient.DownloadFile("http://nuget.org/nuget.exe", $nugetPath);
+    }
+
+    $configPath = Join-Path $ProductHomeDir "NuGet.config"
+    & $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
+    & $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
+    & $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
+    & $nugetPath install NUnit.Extension.TeamCityEventListener -OutputDirectory $TempDir -ConfigFile $configPath -Version 1.0.4 |Out-Null
+
+    $tools = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools"
+    $tools1 = Join-Path $TempDir "NUnit.Extension.NUnitV2Driver.3.7.0\tools\*"
+    $tools2 = Join-Path $TempDir "NUnit.Extension.NUnitV2ResultWriter.3.6.0\tools\*"
+    $tools3 = Join-Path $TempDir "NUnit.Extension.TeamCityEventListener.1.0.4\tools\*"
+    Copy-Item -Path $tools1 -Destination $tools -Recurse | Write-Host
+    Copy-Item -Path $tools2 -Destination $tools -Recurse | Write-Host
+    Copy-Item -Path $tools3 -Destination $tools -Recurse | Write-Host
+    
+    $nunitexe = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools\nunit3-console.exe"
+    return $nunitexe
+}
+
 function Main()
 {
     $env:InTestUserName = $GuestCredentials[0]
@@ -153,7 +186,9 @@ function Main()
 
     FreeSpace | Write-Host
 
-    TestsInMachines $machines |Write-Host
+    $nunitexe = PrepareNUnit
+
+    TestsInMachines $machines $nunitexe |Write-Host
     return $machines
 }
 
