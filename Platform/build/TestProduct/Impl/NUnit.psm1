@@ -57,7 +57,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
             "--framework=v4.0",
             "--noresult",
             "--teamcity",
-            $Dll
+            """$Dll"""
         )
         if ($where -ne "") {$nunitargs+=$where}
 
