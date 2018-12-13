@@ -55,6 +55,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
         $nunitargs = 
         @(
             "--framework=v4.0",
+            "--x86",
             "--noresult",
             "--teamcity",
             """$Dll"""
