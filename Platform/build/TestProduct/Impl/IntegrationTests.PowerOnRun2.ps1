@@ -160,14 +160,17 @@ function PrepareNUnit() {
     & $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
     & $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
     & $nugetPath install NUnit.Extension.TeamCityEventListener -OutputDirectory $TempDir -ConfigFile $configPath -Version 1.0.4 |Out-Null
+    & $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
 
     $tools = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools"
     $tools1 = Join-Path $TempDir "NUnit.Extension.NUnitV2Driver.3.7.0\tools\*"
     $tools2 = Join-Path $TempDir "NUnit.Extension.NUnitV2ResultWriter.3.6.0\tools\*"
     $tools3 = Join-Path $TempDir "NUnit.Extension.TeamCityEventListener.1.0.4\tools\*"
+    $tools4 = Join-Path $TempDir "JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs.2.6.408\lib\net\*"
     Copy-Item -Path $tools1 -Destination $tools -Recurse | Write-Host
     Copy-Item -Path $tools2 -Destination $tools -Recurse | Write-Host
     Copy-Item -Path $tools3 -Destination $tools -Recurse | Write-Host
+    Copy-Item -Path $tools4 -Destination $tools -Recurse | Write-Host
     
     $nunitexe = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools\nunit3-console.exe"
     return $nunitexe
