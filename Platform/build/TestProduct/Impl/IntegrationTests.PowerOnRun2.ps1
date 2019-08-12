@@ -185,7 +185,8 @@ function Main()
     $machines = @( & "$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\PowerOn.ps1" -cloneNamePattern $cloneNamePattern -VmName $VmName -ViServerData $ViServerData -CountOfMachinesToStart $countToStart)
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
-        
+        Write-Host "GET IP OF VM"
+        $mashine.data.IpAddress | Out-String | Write-Host
         $nunitexe = PrepareNUnit($machine)
     }
 
