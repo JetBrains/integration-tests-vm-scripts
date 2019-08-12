@@ -27,7 +27,7 @@ function RunIntegrationTests
     ## Test!
     try
     {
-       & $RunNunit -Dll $fileToTest
+       & psexec \$machine.IpAddress -u user -p 123 $RunNunit -Dll $fileToTest
     }
     catch
     {
