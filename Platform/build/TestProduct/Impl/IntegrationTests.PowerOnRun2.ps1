@@ -139,7 +139,7 @@ function FreeSpace() {
     }
 }
 
-function PrepareNUnit($machine) {
+function PrepareNUnit($ip) {
     $TempDir = [System.IO.Path]::GetTempPath()+'InTestNUnit'
     If (Test-Path $TempDir){
         Remove-Item $TempDir\* -recurse |Out-Null
@@ -156,11 +156,11 @@ function PrepareNUnit($machine) {
     }
 
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
-    & psexec \\$machine["data"]["IpAddress"] -u user -p 123 $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
-    & psexec \\$machine["data"]["IpAddress"] -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
-    & psexec \\$machine["data"]["IpAddress"] -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
+    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
+    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
+    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
     & $nugetPath install NUnit.Extension.TeamCityEventListener -OutputDirectory $TempDir -ConfigFile $configPath -Version 1.0.4 |Out-Null
-    & psexec \\$machine["data"]["IpAddress"] -u user -p 123 $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
+    & psexec \\$ip -u user -p 123 $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
 
     #$tools = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools"
     #$tools1 = Join-Path $TempDir "NUnit.Extension.NUnitV2Driver.3.7.0\tools\*"
@@ -189,7 +189,9 @@ function Main()
         $machine.data.IpAddress | Out-String | Write-Host
         Write-Host "GET IP OF VM"
         $machine.data["IpAddress"] | Out-String | Write-Host
-        $nunitexe = PrepareNUnit($machine)
+
+        $ip = $machine.data.IpAddress | Out-String
+        $nunitexe = PrepareNUnit($ip)
     }
 
     FreeSpace | Write-Host
