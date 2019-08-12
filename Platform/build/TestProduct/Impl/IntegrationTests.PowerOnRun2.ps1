@@ -186,7 +186,9 @@ function Main()
     foreach ($machine in $machines) {
         $machine.data | Out-String | Write-Host
         Write-Host "GET IP OF VM"
-        $mashine.data.IpAddress | Out-String | Write-Host
+        $machine.data.IpAddress | Out-String | Write-Host
+        Write-Host "GET IP OF VM"
+        $machine.data["IpAddress"] | Out-String | Write-Host
         $nunitexe = PrepareNUnit($machine)
     }
 
