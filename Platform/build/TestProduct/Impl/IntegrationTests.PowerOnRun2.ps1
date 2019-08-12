@@ -156,11 +156,11 @@ function PrepareNUnit($ip) {
     }
 
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
-    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
-    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
-    & psexec \\$ip -u user -p 123 $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
+    & psexec \\$ip -u user -p 123 -h -accepteula $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
+    & psexec \\$ip -u user -p 123 -h -accepteula $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
+    & psexec \\$ip -u user -p 123 -h -accepteula $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
     & $nugetPath install NUnit.Extension.TeamCityEventListener -OutputDirectory $TempDir -ConfigFile $configPath -Version 1.0.4 |Out-Null
-    & psexec \\$ip -u user -p 123 $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
+    & psexec \\$ip -u user -p 123 -h -accepteula $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
 
     #$tools = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools"
     #$tools1 = Join-Path $TempDir "NUnit.Extension.NUnitV2Driver.3.7.0\tools\*"
