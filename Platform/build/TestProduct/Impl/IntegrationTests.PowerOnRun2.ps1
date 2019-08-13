@@ -156,12 +156,19 @@ function PrepareNUnit($ip) {
     }
 
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
- 
-    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" -c $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
-    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" -c $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
-    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" -c $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
+
+    Write-Host "try create remote path"
+    \\$ip\C$\$TempDir.substring(3) | Out-String | Write-Host
+
+    & net use \\$ip "123" /USER:user
+    & xcopy $nugetPath \\$ip\C$\$TempDir.substring(3)
+    & net use \\$ip /DELETE
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" cmd /c copy
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
     & $nugetPath install NUnit.Extension.TeamCityEventListener -OutputDirectory $TempDir -ConfigFile $configPath -Version 1.0.4 |Out-Null
-    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" -c $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install JetBrains.NUnit.ReSharperRunner2.CompileTimeRefs -OutputDirectory $TempDir -ConfigFile $configPath -Version 2.6.408 |Out-Null
 
     #$tools = Join-Path $TempDir "NUnit.ConsoleRunner.3.8.0\tools"
     #$tools1 = Join-Path $TempDir "NUnit.Extension.NUnitV2Driver.3.7.0\tools\*"
