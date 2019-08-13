@@ -160,6 +160,9 @@ function PrepareNUnit($ip) {
     $pathone = $TempDir.substring(2)
     $pathtwo = "\\"+$ip+"\c$"+$pathone
 
+    Write-Host "pathone ->" $pathone
+    Write-Host "pathtwo ->" $pathtwo
+
     & net use \\$ip "123" /USER:user | Out-String | Write-Host
     & xcopy $nugetPath \\$pathtwo | Out-String | Write-Host
     & net use \\$ip /DELETE | Out-String | Write-Host
