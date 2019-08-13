@@ -201,8 +201,9 @@ function Main()
         $machine.data.IpAddress | Out-String | Write-Host
         Write-Host "GET IP OF VM"
         $machine.data["IpAddress"] | Out-String | Write-Host
-
         $ip = $machine.data.IpAddress | Out-String
+        $ip = $ip.Replace("`n","")
+        $ip = $ip.Replace("`r","")
         $nunitexe = PrepareNUnit($ip)
     }
 
