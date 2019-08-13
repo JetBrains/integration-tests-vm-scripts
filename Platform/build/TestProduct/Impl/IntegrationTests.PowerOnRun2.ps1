@@ -158,10 +158,11 @@ function PrepareNUnit($ip) {
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
 
     Write-Host "try create remote path"
-    \\$ip\C$\$TempDir.substring(3) | Out-String | Write-Host
+    $path1 = $TempDir.substring(3)
+    $path2 = [IO.Path]::Combine('\\$ip','C$','$path1') | Out-String | Write-Host
 
     & net use \\$ip "123" /USER:user
-    & xcopy $nugetPath \\$ip\C$\$TempDir.substring(3)
+    & xcopy $nugetPath $path2
     & net use \\$ip /DELETE
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" cmd /c copy
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
