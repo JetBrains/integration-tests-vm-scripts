@@ -158,13 +158,14 @@ function PrepareNUnit($ip) {
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
 
     Write-Host "try create remote path"
-    $path1 = $TempDir.substring(3) | Out-String | Write-Host
-    $path2 = [IO.Path]::Combine('\\', $ip, 'c$', $path1) | Out-String | Write-Host
+    $pathone = $TempDir.substring(2) | Out-String | Write-Host
+    $pathtwo = Join-Path $ip 'c$' $pathone | Out-String | Write-Host
 
-    & net use \\$ip "123" /USER:user
-    & xcopy $nugetPath $path2
-    & net use \\$ip /DELETE
-    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" cmd /c copy
+    & net use \\$ip "123" /USER:user | Out-String | Write-Host
+    & xcopy $nugetPath \\$pathtwo | Out-String | Write-Host
+    & net use \\$ip /DELETE | Out-String | Write-Host
+
+    & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" cmd /c copy | Out-String | Write-Host
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
