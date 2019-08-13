@@ -157,15 +157,15 @@ function PrepareNUnit($ip) {
 
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
 
-    $pathone = $TempDir.substring(2)
-    $pathtwo = "\\"+$ip+"\c$"+$pathone
+    $pathone = $TempDir.substring(1)
+    $pathtwo = "x"+$pathone
 
     Write-Host "pathone ->" $pathone
     Write-Host "pathtwo ->" $pathtwo
 
-    & net use \\$ip "123" /USER:user | Out-String | Write-Host
-    & xcopy $nugetPath \\$pathtwo | Out-String | Write-Host
-    & net use \\$ip /DELETE | Out-String | Write-Host
+    & net use x: \\$ip "123" /USER:user | Out-String | Write-Host
+    & xcopy $nugetPath $pathtwo | Out-String | Write-Host
+    & net use x: /DELETE | Out-String | Write-Host
 
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" cmd /c copy | Out-String | Write-Host
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
