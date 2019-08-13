@@ -158,8 +158,8 @@ function PrepareNUnit($ip) {
     $configPath = Join-Path $ProductHomeDir "NuGet.config"
 
     Write-Host "try create remote path"
-    $path1 = $TempDir.substring(3)
-    $path2 = Join-Path "\\" -ChildPath $ip | Join-Path -ChildPath "C$" | Join-Path -ChildPath $path1 | Out-String | Write-Host
+    $path1 = $TempDir.substring(3) | Out-String | Write-Host
+    $path2 = [IO.Path]::Combine('\\', $ip, 'c$', $path1) | Out-String | Write-Host
 
     & net use \\$ip "123" /USER:user
     & xcopy $nugetPath $path2
