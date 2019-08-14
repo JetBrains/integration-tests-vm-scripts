@@ -22,10 +22,10 @@ function MakeScriptBlock($machine, $fileToTest, $nunitexe)
     $env:InTestIpAddress = $machine.data.IpAddress
 
     #***************************************************************
-    Write-Host "MY IP IS" $ip
     $ip = $machine.data.IpAddress | Out-String
     $ip = $ip.Replace("`n","")
     $ip = $ip.Replace("`r","")
+    Write-Host "MY IP IS" $ip
     #***************************************************************
 
     $params = @{fileToTest = """$fileToTest""";nunitexe = """$nunitexe""";ip = """$ip"""}
