@@ -162,7 +162,9 @@ function PrepareNUnit($ip) {
 
     Write-Host "pathone ->" $pathone
     Write-Host "pathtwo ->" $pathtwo
-
+    Write-Host 'net use x: ->' net use x: \\$ip "123" /USER:user
+    Write-Host "xcopy ->" xcopy `"$nugetPath`" `"$pathtwo`"
+    
     & net use x: \\$ip "123" /USER:user | Out-String | Write-Host
     & xcopy `"$nugetPath`" `"$pathtwo`" | Out-String | Write-Host
     & net use x: /DELETE | Out-String | Write-Host
