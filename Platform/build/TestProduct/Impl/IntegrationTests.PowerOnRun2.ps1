@@ -20,7 +20,14 @@ function MakeScriptBlock($machine, $fileToTest, $nunitexe)
 {
     Write-Host Running tests for: $fileToTest in $machine.cloneName with $nunitexe
     $env:InTestIpAddress = $machine.data.IpAddress
-    $params = @{fileToTest = """$fileToTest""";nunitexe = """$nunitexe"""}
+
+    #***************************************************************
+    $ip = $machine.data.IpAddress | Out-String
+    $ip = $ip.Replace("`n","")
+    $ip = $ip.Replace("`r","")
+    #***************************************************************
+
+    $params = @{fileToTest = """$fileToTest""";nunitexe = """$nunitexe""";ip = """$ip"""}
     if ($NUnitIncludeCategory -ne "")  { $params.Add("NUnitIncludeCategory", $NUnitIncludeCategory) }
     if ($NUnitExcludeCategory -ne "")  { $params.Add("NUnitExcludeCategory", $NUnitExcludeCategory) }
     [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\RunTests.ps1"

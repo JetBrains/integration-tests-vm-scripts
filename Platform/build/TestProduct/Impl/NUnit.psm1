@@ -12,13 +12,14 @@ function New-NUnitRunner
     (
         $nunitexe,
         $NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
-        $NUnitExcludeCategory = "" # Empty by default. Use "," separator to provide several categories
+        $NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
+        $ip
     )
        
     # Load the helper module (incl. TeamCity props support)
     & "$ProductHomeDir/Platform/Tools/PowerShell/JetCmdlet/Load-JetCmdlet.ps1" | Write-Host
     
-    New-NUnitRunner-TeamCity -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory
+    New-NUnitRunner-TeamCity -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory -ip $ip
 }
 Export-ModuleMember -Function New-NUnitRunner
 
@@ -43,7 +44,7 @@ function MakeWhereString([Parameter(Mandatory=$false)][string]$NUnitIncludeCateg
     return "--where=$($clauses -join " && ")"
 }
 
-function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parameter(Mandatory=$false)]$NUnitIncludeCategory, [Parameter(Mandatory=$false)]$NUnitExcludeCategory) {
+function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parameter(Mandatory=$false)]$NUnitIncludeCategory, [Parameter(Mandatory=$false)]$NUnitExcludeCategory, [Parameter(Mandatory=$true)]$ip) {
     Write-Host "Using NUnit runner at $nunitexe, NUnitIncludeCategory: $NUnitIncludeCategory, NUnitExcludeCategory: $NUnitExcludeCategory"
     $where = MakeWhereString -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory
     Write-Host "where: $where"
@@ -63,7 +64,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
         if ($where -ne "") {$nunitargs+=$where}
 
         Write-Host "Runner params: $nunitargs"
-        & "$nunitexe" $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
+        & psexec -accepteula \\$ip -H -I -u user -p "123" `"$nunitexe`" $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
     }
     return $script.GetNewClosure()
 }

@@ -3,7 +3,8 @@ Param
     [Parameter(Position=0)]$NUnitIncludeCategory = "", # Empty by default. Use "," separator to provide several categories
     [Parameter(Position=0)]$NUnitExcludeCategory = "", # Empty by default. Use "," separator to provide several categories
     [Parameter(Position=0, Mandatory=$true)]$fileToTest,
-    [Parameter(Position=0, Mandatory=$true)]$nunitexe
+    [Parameter(Position=0, Mandatory=$true)]$nunitexe,
+    [Parameter(Position=0, Mandatory=$true)]$ip
 )
 
 <#ScriptPrologue#> Set-StrictMode -Version Latest; $ErrorActionPreference = [System.Management.Automation.ActionPreference]::Stop
@@ -19,8 +20,15 @@ function RunIntegrationTests
     Write-Host -BackgroundColor Gray -ForegroundColor DarkBlue " + $fileToTest"
 
     # which NUnit to use
-    Import-Module "$ProductHomeDir\Platform\build\TestProduct\Impl\NUnit.psm1"    
-    [scriptblock]$RunNunit = New-NUnitRunner -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory
+    Import-Module "$ProductHomeDir\Platform\build\TestProduct\Impl\NUnit.psm1"  
+    
+    #*******************************************************************************
+    & net use x: \\$ip\C$ "123" /USER:user | Out-String | Write-Host
+    & xcopy `"C:\Build Agent\`" `"X:\Build Agent\`" | Out-String | Write-Host
+    & net use x: /DELETE | Out-String | Write-Host  
+    #*******************************************************************************
+    
+    [scriptblock]$RunNunit = New-NUnitRunner -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory -ip $ip
     Write-Host "Running nunit: "$RunNunit
 
     ####################
