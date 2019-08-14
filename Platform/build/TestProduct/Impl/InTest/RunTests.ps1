@@ -26,7 +26,7 @@ function RunIntegrationTests
     Write-Host "TRY NET USE with ip " $ip
     & net use * /DELETE /Y
     & net use x: \\$ip\C$ "123" /USER:user | Out-String | Write-Host
-    & xcopy /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
+    & xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
     & net use x: /DELETE | Out-String | Write-Host  
     #*******************************************************************************
     
