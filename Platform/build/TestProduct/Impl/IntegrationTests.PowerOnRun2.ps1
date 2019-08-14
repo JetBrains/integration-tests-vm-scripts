@@ -169,6 +169,8 @@ function PrepareNUnit($ip) {
     & xcopy `"$nugetPath`" `"$pathtwo`" | Out-String | Write-Host
     & net use x: /DELETE | Out-String | Write-Host
 
+    $nugetPath=[System.IO.Path]::GetTempPath()+'InTestNUnit\'+"nuget.exe"
+
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.ConsoleRunner -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.8.0 |Out-Null
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2Driver -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.7.0 |Out-Null
     & psexec -accepteula \\$ip -H -I -D -N 10 -u user -p "123" $nugetPath install NUnit.Extension.NUnitV2ResultWriter -OutputDirectory $TempDir -ConfigFile $configPath -Version 3.6.0 |Out-Null
