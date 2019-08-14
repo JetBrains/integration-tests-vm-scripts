@@ -61,7 +61,7 @@ function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parame
             "--teamcity",
             """$Dll"""
         )
-        if ($where -ne "") {$nunitargs+=$where}
+        #if ($where -ne "") {$nunitargs+=$where}
 
         Write-Host "Runner params: $nunitargs"
         & psexec -accepteula \\$ip -H -I -u user -p "123" `"$nunitexe`" $nunitargs 2>&1 # redirect stderr to stdout, otherwise a build with muted tests is reported as failed because of the stdout text
