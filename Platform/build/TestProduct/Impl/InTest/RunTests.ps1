@@ -55,4 +55,4 @@ function RunIntegrationTests
     ############
 }
 
-Write-Host (RunIntegrationTests)
+RunIntegrationTests
