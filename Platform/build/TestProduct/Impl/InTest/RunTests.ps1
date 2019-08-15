@@ -24,10 +24,15 @@ function RunIntegrationTests
     
     #*******************************************************************************
     Write-Host "TRY NET USE with ip " $ip
-    Write-Host net use x: \\$ip\C$ "123" /USER:user
+    
     & net use * /DELETE /Y
     & net use x: \\$ip\C$ "123" /USER:user | Out-String | Write-Host
-    & xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
+
+    & robocopy `"C:\Build Agent`" `"X:\Build Agent`" /E /COPYALL | Out-String | Write-Host
+    
+    #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
+    #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
+
     & net use x: /DELETE | Out-String | Write-Host  
     #*******************************************************************************
     
