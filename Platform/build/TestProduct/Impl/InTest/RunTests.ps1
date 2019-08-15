@@ -25,25 +25,17 @@ function RunIntegrationTests
     #*******************************************************************************
     Write-Host "TRY NET USE with ip " $ip
     
-    & net use * /DELETE /Y |Out-Null
-    & net use x: \\$ip\C$ "123" /USER:user |Out-Null
+    & net use * /DELETE /Y | Out-Null
+    & net use x: \\$ip\C$ "123" /USER:user | Out-Null
 
-    & robocopy `"C:\Build Agent\bin`" `"X:\Build Agent\bin`" /E |Out-Null
-    & robocopy `"C:\Build Agent\conf`" `"X:\Build Agentconf`" /E |Out-Null
-    & robocopy `"C:\Build Agent\contrlib`" `"X:\Build Agent\contrlib`" /E |Out-Null
-    & robocopy `"C:\Build Agent\launcher`" `"X:\Build Agent\launcher`" /E |Out-Null
-    & robocopy `"C:\Build Agent\lib`" `"X:\Build Agent\lib`" /E |Out-Null
-    & robocopy `"C:\Build Agent\logs`" `"X:\Build Agent\logs`" /E |Out-Null
-    & robocopy `"C:\Build Agent\plugins`" `"X:\Build Agent\plugins`" /E |Out-Null
-    & robocopy `"C:\Build Agent\system`" `"X:\Build Agent\system`" /E |Out-Null
-    & robocopy `"C:\Build Agent\temp`" `"X:\Build Agent\temp`" /E |Out-Null
-    & robocopy `"C:\Build Agent\tools`" `"X:\Build Agent\tools`" /E |Out-Null
-    & robocopy `"C:\Build Agent\work`" `"X:\Build Agent\work`" /E /MAXAGE:1 |Out-Null
-    
+    $job = Start-Job { robocopy `"C:\Build Agent`" `"X:\Build Agent`" /E }
+    Wait-Job $job
+    Receive-Job $job
+
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
 
-    & net use x: /DELETE |Out-Null  
+    & net use x: /DELETE | Out-Null  
     #*******************************************************************************
     
     [scriptblock]$RunNunit = New-NUnitRunner -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory -ip $ip
