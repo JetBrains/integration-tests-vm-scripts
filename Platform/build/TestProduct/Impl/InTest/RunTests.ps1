@@ -28,7 +28,17 @@ function RunIntegrationTests
     & net use * /DELETE /Y
     & net use x: \\$ip\C$ "123" /USER:user | Out-String | Write-Host
 
-    & robocopy `"C:\Build Agent`" `"X:\Build Agent`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\bin`" `"X:\Build Agent\bin`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\conf`" `"X:\Build Agentconf`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\contrlib`" `"X:\Build Agent\contrlib`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\launcher`" `"X:\Build Agent\launcher`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\lib`" `"X:\Build Agent\lib`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\logs`" `"X:\Build Agent\logs`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\plugins`" `"X:\Build Agent\plugins`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\system`" `"X:\Build Agent\system`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\temp`" `"X:\Build Agent\temp`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\tools`" `"X:\Build Agent\tools`" /E /COPYALL | Out-String | Write-Host
+    & robocopy `"C:\Build Agent\work`" `"X:\Build Agent\work`" /E /COPYALL /MAXAGE:1 | Out-String | Write-Host
     
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
