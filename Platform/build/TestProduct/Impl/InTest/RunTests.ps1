@@ -35,7 +35,7 @@ function RunIntegrationTests
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
     #& xcopy /E /I /S /Y `"C:\Build Agent`" `"X:\Build Agent\`" | Out-String | Write-Host
 
-    & net use x: /DELETE | Out-Null  
+    #& net use x: /DELETE | Out-Null  
     #*******************************************************************************
     
     [scriptblock]$RunNunit = New-NUnitRunner -nunitexe $nunitexe -NUnitIncludeCategory $NUnitIncludeCategory -NUnitExcludeCategory $NUnitExcludeCategory -ip $ip
