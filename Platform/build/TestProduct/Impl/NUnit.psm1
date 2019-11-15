@@ -41,7 +41,7 @@ function MakeWhereString([Parameter(Mandatory=$false)][string]$NUnitIncludeCateg
         $excludes += $NUnitExcludeCategory.Split(",") | %{ "(cat!='$_')" }
     }
 
-	return "--where=($($includes -join " || ") )"&&" $($excludes -join " && ")"
+	return "--where=($($includes -join " || ") )&& $($excludes -join " && ")"
 }
 
 function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parameter(Mandatory=$false)]$NUnitIncludeCategory, [Parameter(Mandatory=$false)]$NUnitExcludeCategory) {
