@@ -29,18 +29,19 @@ function MakeWhereString([Parameter(Mandatory=$false)][string]$NUnitIncludeCateg
         return "";
     }
 
-    $clauses = @()
-
+    $includes = @()
+	$excludes = @()
+	
     if($NUnitIncludeCategory)
     {
-        $clauses += $NUnitIncludeCategory.Split(",") | %{ "(cat=='$_')" }
+        $includes += $NUnitIncludeCategory.Split(",") | %{ "(cat=='$_')" }
     }
     if($NUnitExcludeCategory)
     {
-        $clauses += $NUnitExcludeCategory.Split(",") | %{ "(cat!='$_')" }
+        $excludes += $NUnitExcludeCategory.Split(",") | %{ "(cat!='$_')" }
     }
 
-    return "--where=$($clauses -join " && ")"
+	return "--where=($($includes -join " || ") )"&&" $($excludes -join " && ")"
 }
 
 function New-NUnitRunner-TeamCity([Parameter(Mandatory=$true)]$nunitexe, [Parameter(Mandatory=$false)]$NUnitIncludeCategory, [Parameter(Mandatory=$false)]$NUnitExcludeCategory) {
