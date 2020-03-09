@@ -38,7 +38,9 @@ function CheckFreeMem()
 
 function Clone()
 {
+    Write-Host "call get-vmhost"
     $vmHost = get-vmhost
+    Write-Host "vmHost: " $vmHost
 
     $sourceVM =  $vmHost | get-vm -Name $name
     $datastore = $sourceVM | get-datastore
