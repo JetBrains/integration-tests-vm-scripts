@@ -19,8 +19,10 @@ function Get-ScriptDirectory { Split-Path $script:MyInvocation.MyCommand.Path }
 
 function CheckFreeMem()
 {
+    Write-Host "call get-vmhost"
     $vmHost = get-vmhost
     $vmHost | format-table name, CpuUsageMhz, CpuTotalMhz, MemoryUsageGB, MemoryTotalGB -autosize
+    Write-Host "vmHost: " $vmHost
 
     $memUsage = $vmHost.MemoryUsageGB
     $totalMem = $vmHost.MemoryTotalGB
@@ -108,7 +110,8 @@ function Run()
 {
     Write-Host "Connecting to ViServer... Adress: " $ViServerAddress ' login: ' $ViServerLogin ' password: ' $ViServerPasword 
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
-    
+    Write-Host "Connected to ViServer success. Start cloning..."
+
     Clone
  
     # No need for snapshot operations when working with cloned machine
