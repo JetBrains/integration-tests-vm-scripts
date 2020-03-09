@@ -20,6 +20,7 @@ function PowerOn
     $jobs = @()
     $jobsA = @()
     foreach ($cloneName in $cloneNames) {
+        Write-Host "parameters for cloning vm" ' VmName: ' $VmName ' cloneName: ' $cloneName ' cloneNamePattern: ' $cloneNamePattern ' ViServerAddress: ' $ViServerData[0] ' ViServerLogin: ' $ViServerData[1] ' ViServerPasword: ' $ViServerData[2]
         $params = @{VmName = "`"" + $VmName + "`""; cloneName = "`"" + $cloneName + "`""; cloneNamePattern = $cloneNamePattern; ViServerAddress = $ViServerData[0];ViServerLogin = $ViServerData[1];ViServerPasword = $ViServerData[2]}
         [string] $scriptPath ="$ProductHomeDir\Platform\build\TestProduct\Impl\InTest\VirtualEnvironment.ps1";
         $sb = [scriptblock]::create("&'$scriptpath' $(&{$args} @params)")

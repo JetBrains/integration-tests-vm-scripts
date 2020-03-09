@@ -106,6 +106,7 @@ function WaitGuest([string]$vmName, [int]$timeout)
 
 function Run()
 {
+    Write-Host "Connecting to ViServer... Adress: " $ViServerAddress ' login: ' $ViServerLogin ' password: ' $ViServerPasword 
     & (Join-Path (Get-ScriptDirectory) "ViServer.Connect.ps1") -ViServerAddress $ViServerAddress -ViServerLogin $ViServerLogin -ViServerPasword $ViServerPasword | Out-Null
     
     Clone
